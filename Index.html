@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>BloomingBox CRM</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+ --bg:#f5f5f3;--white:#fff;--border:#e4e4e0;--border2:#d0d0cb;
+ --text:#1a1a1a;--t2:#5a5a5a;--t3:#9a9a9a;
+ --du:#C8102E;--du-d:rgba(200,16,46,.08);
+ --dp:#003087;--dp-d:rgba(0,48,135,.08);
+ --green:#1a7a4a;--gd:#e8f5ee;
+ --amber:#b45309;--ad:#fef3c7;
+ --red:#b91c1c;--rd:#fee2e2;
+ --blue:#1d4ed8;--bd:#dbeafe;
+ --purple:#7c3aed;--pd:#f5f3ff;
+ --r:8px;--rl:12px;
+ --sh:0 1px 3px rgba(0,0,0,.08);--shm:0 4px 20px rgba(0,0,0,.13)
+}
+html,body{height:100%;font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);font-size:14px}
+button{cursor:pointer;font-family:inherit}input,textarea,select{font-family:inherit}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
+
+/* LOGIN */
+.login-screen{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center}
+.login-box{background:var(--white);border:1px solid var(--border);border-radius:var(--rl);padding:40px 44px;width:420px;box-shadow:var(--shm);text-align:center}
+.lb-brand{letter-spacing:4px;font-size:12px;font-weight:700;margin-bottom:4px}
+.lb-sub{font-size:12px;color:var(--t3);margin-bottom:28px}
+.lb-h{font-family:'DM Serif Display',serif;font-size:22px;margin-bottom:6px}
+.ucards{display:flex;flex-direction:column;gap:10px;margin-top:22px}
+.ucard{display:flex;align-items:center;gap:14px;padding:13px 17px;border:1px solid var(--border);border-radius:var(--r);cursor:pointer;transition:all .15s;text-align:left}
+.ucard:hover{border-color:var(--text)}
+.ucard.adm:hover{border-color:var(--purple);background:var(--pd)}
+.uav{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+.unm{font-size:13px;font-weight:600}.uro{font-size:11px;color:var(--t3);margin-top:2px}
+.rbadge{margin-left:auto;padding:2px 9px;border-radius:99px;font-size:11px;font-weight:600}
+.rba{background:var(--pd);color:var(--purple)}.rbm{background:var(--gd);color:var(--green)}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:200;background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 28px;height:54px}
+.nav-brand{letter-spacing:4px;font-size:12px;font-weight:700;margin-right:20px;white-space:nowrap}
+.nav-pill{background:var(--text);color:var(--white);font-size:11px;font-weight:600;padding:3px 10px;border-radius:4px;margin-right:28px}
+.nav-links{display:flex;flex:1}
+.nl{padding:0 14px;height:54px;display:flex;align-items:center;gap:5px;font-size:13px;font-weight:500;color:var(--t2);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap;background:none;border-left:none;border-right:none;border-top:none}
+.nl:hover{color:var(--text)}.nl.active{color:var(--text);border-bottom-color:var(--text)}
+.nl.adm-nl{color:var(--purple);font-weight:600}.nl.adm-nl.active{border-bottom-color:var(--purple)}
+.nav-r{display:flex;align-items:center;gap:8px;margin-left:auto}
+.nav-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600}
+
+/* APP */
+.app{display:flex;height:calc(100vh - 54px);overflow:hidden}
+
+/* SIDEBAR */
+.sb{width:238px;min-width:238px;background:var(--white);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.sb-hd{padding:16px 14px 12px;border-bottom:1px solid var(--border)}
+.sb-lbl{font-size:10px;font-weight:700;color:var(--t3);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
+.srch-w{position:relative}
+.srch-w svg{position:absolute;left:9px;top:50%;transform:translateY(-50%);opacity:.35}
+.srch{width:100%;padding:7px 9px 7px 28px;border:1px solid var(--border);border-radius:var(--r);font-size:13px;color:var(--text);background:var(--bg);outline:none;transition:border-color .15s}
+.srch:focus{border-color:var(--text);background:var(--white)}.srch::placeholder{color:var(--t3)}
+.pl{overflow-y:auto;flex:1;padding:8px 6px}
+.pi{display:flex;align-items:center;gap:9px;padding:8px 9px;border-radius:var(--r);cursor:pointer;transition:all .12s;border:1px solid transparent;margin-bottom:2px}
+.pi:hover{background:var(--bg)}.pi.active{background:var(--text)}
+.pi.active .pn{color:#fff}.pi.active .pc{color:rgba(255,255,255,.5)}
+.plg{width:33px;height:33px;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;border:1px solid var(--border)}
+.pn{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pc{font-size:11px;color:var(--t3)}
+.pdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-left:auto}
+.pdot.g{background:var(--green)}.pdot.a{background:var(--amber)}.pdot.r{background:var(--red)}
+.sb-ft{padding:10px 6px;border-top:1px solid var(--border)}
+.add-p-btn{width:100%;padding:7px;border:1.5px dashed var(--border2);border-radius:var(--r);font-size:12px;font-weight:500;color:var(--t3);background:transparent;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:5px}
+.add-p-btn:hover{border-color:var(--text);color:var(--text)}
+
+/* MAIN */
+.main{flex:1;overflow-y:auto;background:var(--bg)}
+.pg-hd{background:var(--white);border-bottom:1px solid var(--border);padding:18px 26px 0}
+.ph-top{display:flex;align-items:flex-start;justify-content:space-between;padding-bottom:14px}
+.ph-co{display:flex;align-items:center;gap:14px}
+.ph-lb{width:50px;height:50px;border:1px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;cursor:pointer;background:var(--white);overflow:hidden;transition:border-color .15s}
+.ph-lb:hover{border-color:var(--text)}.ph-lb img{width:100%;height:100%;object-fit:cover;border-radius:9px}.ph-lb input{display:none}
+.ph-nm{font-family:'DM Serif Display',serif;font-size:21px;line-height:1.2}
+.ph-meta{display:flex;align-items:center;gap:12px;margin-top:5px;flex-wrap:wrap}
+.ph-mi{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--t2)}
+.ph-act{display:flex;gap:7px;align-items:flex-start;padding-top:2px}
+.tab-row{display:flex}
+.tb{padding:9px 16px;font-size:13px;font-weight:500;color:var(--t3);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;transition:all .15s;white-space:nowrap}
+.tb:hover{color:var(--text)}.tb.active{color:var(--text);border-bottom-color:var(--text)}
+.tp{display:none}.tp.active{display:block}
+
+/* CONTENT */
+.content{padding:22px 26px}
+
+/* STATS */
+.stats-g{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:18px}
+.sc{background:var(--white);border:1px solid var(--border);border-radius:var(--rl);padding:18px 20px;box-shadow:var(--sh)}
+.sc-lbl{font-size:11px;color:var(--t2);font-weight:600;margin-bottom:10px}
+.sc-val{font-family:'DM Serif Display',serif;font-size:26px;line-height:1}
+.sc-sub{font-size:11px;color:var(--t3);margin-top:7px}
+.sc-bar{height:3px;border-radius:99px;background:var(--border);overflow:hidden;margin-top:10px}
+.sc-fill{height:100%;border-radius:99px}
+
+/* CARD */
+.card{background:var(--white);border:1px solid var(--border);border-radius:var(--rl);padding:20px 22px;margin-bottom:15px;box-shadow:var(--sh)}
+.ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:13px;border-bottom:1px solid var(--border)}
+.ct{font-size:14px;font-weight:600;display:flex;align-items:center;gap:7px}
+.csub{font-size:12px;color:var(--t3);margin-top:2px}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:var(--r);font-size:13px;font-weight:500;border:none;transition:all .12s;white-space:nowrap;cursor:pointer;font-family:inherit}
+.btn-p{background:var(--text);color:#fff}.btn-p:hover{background:#333}
+.btn-o{background:#fff;color:var(--text);border:1px solid var(--border)}.btn-o:hover{border-color:var(--text)}
+.btn-sm{padding:5px 10px;font-size:12px}
+.btn-d{background:var(--rd);color:var(--red);border:1px solid #fca5a5}.btn-d:hover{background:#fecaca}
+.btn-g{background:var(--gd);color:var(--green);border:1px solid #86efac}.btn-g:hover{background:#d1fae5}
+.btn-warn{background:var(--ad);color:var(--amber);border:1px solid #fde68a}
+
+/* BADGE */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}
+.bg{background:var(--gd);color:var(--green)}.ba{background:var(--ad);color:var(--amber)}
+.br{background:var(--rd);color:var(--red)}.bb{background:var(--bd);color:var(--blue)}
+.bgr{background:#f3f4f6;color:#6b7280}.bdu{background:var(--du-d);color:var(--du)}.bdp{background:var(--dp-d);color:var(--dp)}
+
+/* FORM */
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:13px}
+.fgrp{display:flex;flex-direction:column;gap:5px}.fgrp.s2{grid-column:span 2}.fgrp.s3{grid-column:span 3}
+.flbl{font-size:12px;font-weight:600;color:var(--t2)}.req{color:var(--red);margin-left:2px}
+.fi,.fs,.ft{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:7px 10px;color:var(--text);font-size:13px;outline:none;transition:border-color .15s,box-shadow .15s;width:100%}
+.fi:focus,.fs:focus,.ft:focus{border-color:var(--text);background:var(--white);box-shadow:0 0 0 3px rgba(26,26,26,.05)}
+.fi:disabled,.fs:disabled,.ft:disabled{opacity:.55;cursor:not-allowed;background:var(--bg)}
+.fi.err,.fs.err,.ft.err{border-color:var(--red);box-shadow:0 0 0 2px rgba(185,28,28,.1)}
+.fi::placeholder,.ft::placeholder{color:var(--t3);font-weight:400}
+.fs{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%239a9a9a' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center;padding-right:26px;background-color:var(--bg)}
+.fs option{background:#fff}.ft{resize:vertical;min-height:78px;line-height:1.5}
+.ferr{font-size:11px;color:var(--red);display:none}.ferr.show{display:block}
+.fhint{font-size:11px;color:var(--t3)}.div{height:1px;background:var(--border);margin:16px 0}
+.slbl{font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:11px}
+
+/* UPLOAD */
+.upz{border:1.5px dashed var(--border2);border-radius:var(--r);padding:18px;text-align:center;cursor:pointer;transition:all .15s;background:var(--bg)}
+.upz:hover,.upz.dov{border-color:var(--text);background:#f0f0ee}
+.upz p{font-size:13px;color:var(--t2);margin-top:7px}.upz span{font-size:11px;color:var(--t3)}
+.uploaded{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.fitem{display:flex;align-items:center;gap:8px;padding:6px 9px;background:var(--bg);border:1px solid var(--border);border-radius:6px}
+.fitem .fn{font-size:12px;font-weight:500;flex:1}.fitem .fsz{font-size:11px;color:var(--t3)}
+.frm{background:none;border:none;color:var(--t3);cursor:pointer;font-size:14px}.frm:hover{color:var(--red)}
+
+/* TOGGLE */
+.tg{position:relative;display:inline-block;width:33px;height:18px}
+.tg input{opacity:0;width:0;height:0}
+.tgs{position:absolute;cursor:pointer;inset:0;background:var(--border2);border-radius:99px;transition:.2s}
+.tgs::before{content:'';position:absolute;width:12px;height:12px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.tg input:checked+.tgs{background:#25d366}
+.tg input:checked+.tgs::before{transform:translateX(15px)}
+
+/* POC */
+.poc-list{display:flex;flex-direction:column;gap:9px}
+.poc-card{border:1px solid var(--border);border-radius:var(--r);padding:13px 15px;display:grid;grid-template-columns:36px 1fr 1fr 1fr auto auto;align-items:center;gap:13px;transition:all .15s;cursor:pointer}
+.poc-card:hover{border-color:var(--border2);box-shadow:var(--sh)}
+.poc-av{width:36px;height:36px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+.poc-nm{font-size:13px;font-weight:600}.poc-tt{font-size:11px;color:var(--t3);margin-top:2px}
+.poc-ct{font-size:12px;color:var(--t2);display:flex;align-items:center;gap:5px}
+.wa-w{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--t2)}
+.poc-ac{display:flex;gap:6px}
+
+/* TABLE */
+.tw{overflow-x:auto;border-radius:var(--r);border:1px solid var(--border)}
+.pt{width:100%;border-collapse:collapse}
+.pt th{text-align:left;padding:9px 13px;font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;background:var(--bg);border-bottom:1px solid var(--border)}
+.pt td{padding:12px 13px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle}
+.pt tr:last-child td{border-bottom:none}
+.pt .pr:hover td{background:#fafafa;cursor:pointer}
+.pnm{font-weight:600;font-size:13px}.prf{font-size:11px;color:var(--t3);margin-top:2px}
+
+/* ORDER TOGGLE */
+.del-tog{display:flex;align-items:center;gap:6px;cursor:pointer;width:fit-content}
+.del-tog input{display:none}
+.del-tog input:not(:checked)+.pill{padding:3px 10px;border-radius:99px;font-size:11px;font-weight:600;background:var(--ad);color:var(--amber)}
+.del-tog input:checked+.pill{padding:3px 10px;border-radius:99px;font-size:11px;font-weight:600;background:var(--gd);color:var(--green)}
+
+/* INNER TABS */
+.itabs{display:flex;gap:4px;padding:4px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r);width:fit-content;margin-bottom:20px}
+.it{padding:6px 16px;border-radius:6px;font-size:13px;font-weight:500;color:var(--t3);background:transparent;border:none;cursor:pointer;transition:all .15s}
+.it.active{background:var(--white);color:var(--text);box-shadow:var(--sh)}
+.itp{display:none}.itp.active{display:block}
+
+/* SD CARDS */
+.sd-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}
+.sd-card{border:1px solid var(--border);border-radius:var(--r);padding:16px;cursor:pointer;transition:all .15s;background:var(--white)}
+.sd-card:hover{border-color:var(--text);box-shadow:var(--sh)}
+.sd-logo{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+.add-sd-card{border:1.5px dashed var(--border2);border-radius:var(--r);padding:16px;cursor:pointer;transition:all .15s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:140px;color:var(--t3);font-size:13px;font-weight:500}
+.add-sd-card:hover{border-color:var(--text);color:var(--text)}
+
+/* ACTIVITY */
+.act-list{display:flex;flex-direction:column}
+.act-item{display:flex;gap:12px;padding:13px 0;border-bottom:1px solid var(--border)}
+.act-item:last-child{border-bottom:none}
+.act-ic{width:33px;height:33px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:15px;background:var(--bg);border:1px solid var(--border);flex-shrink:0}
+.act-type{font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+.act-txt{font-size:13px;line-height:1.5}.act-tm{font-size:11px;color:var(--t3);margin-top:3px}
+
+/* MODAL */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.35);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:500}
+.ov.open{display:flex}
+.modal{background:#fff;border:1px solid var(--border);border-radius:var(--rl);width:540px;max-width:calc(100vw - 32px);max-height:calc(100vh - 48px);overflow-y:auto;padding:24px 26px;box-shadow:var(--shm);animation:mIn .18s ease}
+.modal.wide{width:720px}.modal.xlg{width:900px}
+@keyframes mIn{from{opacity:0;transform:translateY(-10px) scale(.99)}to{opacity:1;transform:none}}
+.m-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px}
+.m-title{font-family:'DM Serif Display',serif;font-size:17px}
+.m-sub{font-size:12px;color:var(--t3);margin-top:3px}
+.m-close{background:none;border:none;color:var(--t3);cursor:pointer;font-size:17px;line-height:1;flex-shrink:0;padding:2px}
+.m-close:hover{color:var(--text)}
+.m-foot{display:flex;justify-content:flex-end;gap:8px;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
+.m-sect{font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin:16px 0 10px}
+
+/* ADMIN */
+.admin-page{padding:28px;overflow-y:auto;height:calc(100vh - 54px)}
+.adm-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px}
+.adm-title{font-family:'DM Serif Display',serif;font-size:24px}
+.adm-sub{font-size:13px;color:var(--t2);margin-top:4px}
+.adm-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:22px}
+.as{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px}
+.as-val{font-family:'DM Serif Display',serif;font-size:24px;margin-bottom:4px}
+.as-lbl{font-size:11px;color:var(--t3);font-weight:600}
+.ftbl-wrap{background:var(--white);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;box-shadow:var(--sh);margin-bottom:20px}
+.ftbl-hd{padding:12px 18px;background:var(--bg);border-bottom:1px solid var(--border);font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1px;display:flex;align-items:center;gap:8px}
+.ftbl-cols{display:grid;grid-template-columns:32px 210px 1fr 110px 90px 100px;background:var(--bg);border-bottom:1px solid var(--border)}
+.ftbl-cols>div{padding:8px 12px;font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px}
+.frow{display:grid;grid-template-columns:32px 210px 1fr 110px 90px 100px;align-items:center;border-bottom:1px solid var(--border);transition:background .1s}
+.frow:last-child{border-bottom:none}.frow:hover{background:var(--bg)}
+.frow>div{padding:10px 12px}
+.fr-num{font-size:11px;color:var(--t3);font-weight:600;text-align:center}
+.fr-lbl{font-size:13px;font-weight:500}
+.fr-req{font-size:10px;font-weight:700;background:var(--rd);color:var(--red);padding:1px 5px;border-radius:99px;margin-left:5px;vertical-align:middle}
+.fr-virtual{font-size:10px;color:var(--t3);margin-left:4px;vertical-align:middle}
+.fr-sect{font-size:12px;color:var(--t2)}
+.fr-type span{font-size:11px;background:var(--bg);border:1px solid var(--border);padding:2px 7px;border-radius:99px;color:var(--t3);font-family:monospace}
+/* field-permission toggle */
+.ftg{position:relative;width:38px;height:20px;display:inline-block;vertical-align:middle}
+.ftg input{opacity:0;width:0;height:0}
+.ftg-sl{position:absolute;cursor:pointer;inset:0;background:var(--rd);border:1px solid #fca5a5;border-radius:99px;transition:.2s}
+.ftg-sl::before{content:'';position:absolute;width:13px;height:13px;left:3px;top:3px;background:var(--red);border-radius:50%;transition:.2s}
+.ftg input:checked+.ftg-sl{background:var(--gd);border-color:#86efac}
+.ftg input:checked+.ftg-sl::before{transform:translateX(17px);background:var(--green)}
+.ftg-lbl{font-size:11px;font-weight:600;margin-left:6px;vertical-align:middle}
+
+/* MINI TABLE */
+.mtbl{width:100%;border-collapse:collapse;border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.mtbl th{text-align:left;padding:8px 11px;font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;background:var(--bg);border-bottom:1px solid var(--border)}
+.mtbl td{padding:9px 11px;border-bottom:1px solid var(--border);font-size:13px}
+.mtbl tr:last-child td{border-bottom:none}
+
+/* ACCESS DENIED */
+.access-denied{display:flex;flex-direction:column;align-items:center;justify-content:center;height:calc(100vh - 54px);gap:12px;color:var(--t3)}
+.access-denied h2{font-family:'DM Serif Display',serif;font-size:22px;color:var(--text)}
+.access-denied p{font-size:13px;max-width:300px;text-align:center;line-height:1.6}
+
+/* TOASTS */
+.toasts-c{position:fixed;bottom:22px;right:22px;z-index:1000;display:flex;flex-direction:column;gap:7px}
+.toast{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:10px 15px;display:flex;align-items:center;gap:9px;font-size:13px;min-width:255px;box-shadow:var(--shm);animation:tIn .2s ease}
+@keyframes tIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.toast.success{border-left:3px solid var(--green)}.toast.error{border-left:3px solid var(--red)}.toast.info{border-left:3px solid var(--text)}
+.row{display:flex;align-items:center;gap:8px}
+.poc-hero{display:flex;align-items:center;gap:14px;padding:16px;background:var(--bg);border-radius:var(--r);margin-bottom:16px}
+.poc-hero-av{width:52px;height:52px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;flex-shrink:0}
+.empty{text-align:center;padding:32px;color:var(--t3)}.empty p{font-size:13px;margin-top:6px}
+</style></head>
+<body><!-- LOGIN -->
+<div class="login-screen" id="LS"><div class="login-box"><div class="lb-brand">B L O O M I N G B O X</div><div class="lb-sub">B2B Partner CRM — UAE</div><div class="lb-h">Welcome back</div><p style="font-size:13px;color:var(--t3)">Select your profile to continue</p><div class="ucards"><div class="ucard adm" onclick="login('kartik')"><div class="uav" style="background:var(--pd);color:var(--purple)">KA</div><div><div class="unm">Kartik Agarwal</div><div class="uro">System Administrator</div></div><div class="rbadge rba">Admin</div></div><div class="ucard" onclick="login('tanya')"><div class="uav" style="background:#fff0f2;color:var(--du)">TB</div><div><div class="unm">Tanya BB</div><div class="uro">Account Manager</div></div><div class="rbadge rbm">Account Manager</div></div><div class="ucard" onclick="login('maria')"><div class="uav" style="background:#eff6ff;color:var(--dp)">MK</div><div><div class="unm">Maria Khan</div><div class="uro">Account Manager</div></div><div class="rbadge rbm">Account Manager</div></div></div></div>
+</div><!-- NAV -->
+<nav class="nav" id="NAV" style="display:none"><div class="nav-brand">B L O O M I N G B O X</div><div class="nav-pill">UAE</div><div class="nav-links"><button class="nl active" onclick="navC(this)">B2B Partners</button><button class="nl adm-nl" id="navAdm" style="display:none" onclick="goAdmin(this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Admin
+ </button></div><div class="nav-r"><div class="nav-av" id="navAv"></div><div><div style="font-size:13px;font-weight:600" id="navNm"></div><div style="font-size:11px;color:var(--t3)" id="navRl"></div></div><button class="btn btn-o btn-sm" onclick="logout()">Logout</button></div>
+</nav><!-- MAIN APP -->
+<div class="app" id="APP" style="display:none"><!-- SIDEBAR -->
+<aside class="sb"><div class="sb-hd"><div class="sb-lbl">B2B Partners</div><div class="srch-w"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input class="srch" type="text" placeholder="Search partners…" oninput="filterP(this.value)"></div></div><div class="pl" id="pList"></div><div class="sb-ft"><button class="add-p-btn" onclick="openM('addPartnerM')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add New Partner
+ </button></div>
+</aside><!-- CONTENT -->
+<div class="main" id="MAIN"><div class="pg-hd"><div class="ph-top"><div class="ph-co"><div class="ph-lb" onclick="document.getElementById('lgF').click()" id="phLB"><span id="phLI"></span><input type="file" id="lgF" accept="image/*" onchange="upLogo(this)"></div><div><div class="ph-nm" id="phNm">—</div><div class="ph-meta" id="phMeta"></div></div></div><div class="ph-act"><button class="btn btn-warn btn-sm" onclick="openEditPartner()">Edit Partner</button><button class="btn btn-o btn-sm" onclick="openM('addPartnerM')">+ New Partner</button><button class="btn btn-p btn-sm" onclick="saveAll()"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>Save Changes
+ </button></div></div><div class="tab-row"><button class="tb active" onclick="swTab('ov',this)">Overview</button><button class="tb" onclick="swTab('profile',this)">Company Profile</button><button class="tb" onclick="swTab('pocs',this)">Contacts</button><button class="tb" onclick="swTab('projects',this)">Projects</button><button class="tb" onclick="swTab('notes',this)">Notes & Activity</button></div></div><div class="content"><!-- OVERVIEW --><div id="tab-ov" class="tp active"><div class="stats-g"><div class="sc"><div class="sc-lbl">Total Projects</div><div class="sc-val" id="oP">—</div><div class="sc-sub" id="oPs">—</div><div class="sc-bar"><div class="sc-fill" id="oPb" style="background:var(--text)"></div></div></div><div class="sc"><div class="sc-lbl">Total Revenue</div><div class="sc-val" id="oR">—</div><div class="sc-sub">Confirmed orders</div><div class="sc-bar"><div class="sc-fill" id="oRb" style="background:var(--green);width:75%"></div></div></div><div class="sc"><div class="sc-lbl">Points of Contact</div><div class="sc-val" id="oC">—</div><div class="sc-sub" id="oCs">—</div><div class="sc-bar"><div class="sc-fill" id="oCb" style="background:var(--blue)"></div></div></div><div class="sc"><div class="sc-lbl">Pending Payments</div><div class="sc-val" id="oPay">—</div><div class="sc-sub" style="color:var(--amber)">Outstanding</div><div class="sc-bar"><div class="sc-fill" id="oPayb" style="background:var(--amber);width:30%"></div></div></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:15px"><div class="card" style="margin:0"><div class="ch"><div><div class="ct">Recent Projects</div><div class="csub">Latest confirmed orders</div></div><button class="btn btn-o btn-sm" onclick="swTab('projects',document.querySelectorAll('.tb')[3])">View All</button></div><div id="ovProjList"></div></div><div class="card" style="margin:0"><div class="ch"><div><div class="ct">Key Contacts</div><div class="csub">Primary POCs</div></div><button class="btn btn-o btn-sm" onclick="swTab('pocs',document.querySelectorAll('.tb')[2])">View All</button></div><div id="ovCtcList"></div></div></div></div><!-- PROFILE --><div id="tab-profile" class="tp"><div class="itabs"><button class="it active" onclick="swInner('company',this)">Company</button><button class="it" onclick="swInner('subdivisions',this)">Sub Divisions</button></div><div id="inner-company" class="itp active"><div class="card"><div class="ch"><div class="ct">Company Information</div><div style="display:flex;gap:8px"><button class="btn btn-warn btn-sm" onclick="openEditPartner()">Edit</button><button class="btn btn-p btn-sm" onclick="saveProfile()">Save Profile</button></div></div><div class="fg"><div class="fgrp"><label class="flbl">Company Name <span class="req">*</span></label><input class="fi" id="f-nm" type="text" oninput="document.getElementById('phNm').textContent=this.value"><span class="ferr" id="e-fnm">Required</span></div><div class="fgrp"><label class="flbl">Industry <span class="req">*</span></label><select class="fs" id="f-ind"><option value="">— Select —</option><option>Telecommunications</option><option>Technology</option><option>Real Estate</option><option>Finance</option><option>Healthcare</option><option>Government</option><option>Retail</option><option>FMCG</option><option>Education</option><option>Other</option></select></div><div class="fgrp"><label class="flbl">Status</label><select class="fs" id="f-status" onchange="updatePartnerStatus(this.value)"><option>Active</option><option>Inactive</option><option>On Hold</option><option>Prospect</option></select></div><div class="fgrp"><label class="flbl">Country</label><select class="fs" id="f-country"><option>UAE</option><option>Saudi Arabia</option><option>Qatar</option><option>Kuwait</option><option>Bahrain</option><option>Oman</option><option>Other</option></select></div><div class="fgrp"><label class="flbl">Phone <span class="req">*</span></label><input class="fi" id="f-ph" type="tel" oninput="vPh(this,'e-fph')"><span class="ferr" id="e-fph">Enter valid phone</span></div><div class="fgrp"><label class="flbl">Website</label><input class="fi" id="f-web" type="url" placeholder="www.example.com"></div><div class="fgrp s2"><label class="flbl">Head Office Address</label><input class="fi" id="f-addr" type="text" placeholder="Full address"></div><div class="fgrp"><label class="flbl">TRN / VAT Number</label><input class="fi" id="f-trn" type="text" oninput="vTRN(this,'e-ftrn')"><span class="ferr" id="e-ftrn">Must be 15 digits</span><span class="fhint">UAE Tax Registration Number</span></div><div class="fgrp"><label class="flbl">Account Manager</label><select class="fs" id="f-mgr"><option>Tanya BB</option><option>Maria Khan</option><option>Kartik Agarwal</option></select></div><div class="fgrp"><label class="flbl">Date Onboarded</label><input class="fi" id="f-onb" type="date"></div><div class="fgrp"><label class="flbl">Partner Type</label><select class="fs" id="f-type"><option>Corporate</option><option>SME</option><option>Government</option><option>Agency</option></select></div></div><div class="div"></div><div class="slbl">Legal Documents</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:13px"><div class="fgrp"><label class="flbl">Trade License (TL)</label><div class="upz" id="tlZ" onclick="document.getElementById('tlF').click()" ondragover="dOv(event,'tlZ')" ondragleave="dLv('tlZ')" ondrop="dDp(event,'tlF','tlFl')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:.3;display:block;margin:0 auto"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/></svg><p>Click or drag to upload</p><span>PDF, JPG, PNG — max 10MB</span><input type="file" id="tlF" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="upFile(this,'tlFl')"></div><div class="uploaded" id="tlFl"></div></div><div class="fgrp"><label class="flbl">VAT Certificate</label><div class="upz" id="vatZ" onclick="document.getElementById('vatF').click()" ondragover="dOv(event,'vatZ')" ondragleave="dLv('vatZ')" ondrop="dDp(event,'vatF','vatFl')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:.3;display:block;margin:0 auto"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><p>Click or drag to upload</p><span>PDF, JPG, PNG — max 10MB</span><input type="file" id="vatF" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="upFile(this,'vatFl')"></div><div class="uploaded" id="vatFl"></div></div></div><div class="fgrp" style="margin-top:13px"><label class="flbl">Other Documents</label><div class="upz" id="othZ" onclick="document.getElementById('othF').click()" ondragover="dOv(event,'othZ')" ondragleave="dLv('othZ')" ondrop="dDp(event,'othF','othFl')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:.3;display:block;margin:0 auto"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><p>NDAs, Contracts, MOUs — multiple files</p><span>PDF, DOC, JPG — max 10MB each</span><input type="file" id="othF" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" multiple style="display:none" onchange="upFile(this,'othFl')"></div><div class="uploaded" id="othFl"></div></div></div></div><div id="inner-subdivisions" class="itp"><div class="card"><div class="ch"><div><div class="ct">Sub Divisions</div><div class="csub">Click a card to view and edit all details</div></div><button class="btn btn-p btn-sm" onclick="openM('sdM')">+ Add Sub Division</button></div><div class="sd-grid" id="sdGrid"></div></div></div></div><!-- CONTACTS --><div id="tab-pocs" class="tp"><div class="card"><div class="ch"><div><div class="ct">Points of Contact</div><div class="csub">Click any row to view details, B2C orders & assigned projects</div></div><button class="btn btn-p btn-sm" onclick="openAddPOC()">+ Add Contact</button></div><div class="poc-list" id="pocList"></div></div></div><!-- PROJECTS --><div id="tab-projects" class="tp"><div class="card"><div class="ch"><div><div class="ct">Projects — Confirmed Orders</div><div class="csub">Click any row to open full details and manage orders</div></div><button class="btn btn-p btn-sm" onclick="openAddProject()">+ Add Project</button></div><div class="tw"><table class="pt"><thead><tr><th style="width:28px"></th><th>Project</th><th>Status</th><th>Budget</th><th>Dates</th><th>PO Number</th><th>Payment</th><th style="width:110px">Actions</th></tr></thead><tbody id="pjBody"></tbody></table></div></div></div><!-- NOTES --><div id="tab-notes" class="tp"><div style="display:grid;grid-template-columns:1fr 1fr;gap:15px"><div class="card" style="margin:0"><div class="ch"><div class="ct">Internal Notes</div><button class="btn btn-p btn-sm" onclick="saveNote()">Save Notes</button></div><textarea class="ft" id="notesArea" style="min-height:200px" placeholder="Add internal notes about this partner…"></textarea></div><div class="card" style="margin:0"><div class="ch"><div class="ct">Activity Log</div><button class="btn btn-o btn-sm" onclick="openM('logM')">+ Add Entry</button></div><div class="act-list" id="actList"></div></div></div></div></div><!-- /content -->
+</div><!-- /main -->
+</div><!-- /app --><!-- ADMIN PAGE (separate from app) -->
+<div id="ADMIN" style="display:none;background:var(--bg)"><div class="admin-page"><div class="adm-hd"><div><div class="adm-title">Admin Panel</div><div class="adm-sub">Field permissions, user roles, and partner management</div></div><div style="display:flex;gap:10px;align-items:center"><div style="padding:7px 14px;background:var(--pd);border:1px solid #ddd6fe;border-radius:var(--r);font-size:13px;color:var(--purple);font-weight:600">Kartik Agarwal</div><button class="btn btn-o btn-sm" onclick="goBackCRM()">← Back to CRM</button><button class="btn btn-p btn-sm" onclick="savePermissions()">Save Permissions</button></div></div><div class="adm-stats"><div class="as"><div class="as-val" id="asTotal">—</div><div class="as-lbl">Total Fields</div></div><div class="as"><div class="as-val" style="color:var(--green)" id="asEdit">—</div><div class="as-lbl">Editable by AM</div></div><div class="as"><div class="as-val" style="color:var(--red)" id="asLock">—</div><div class="as-lbl">Locked</div></div><div class="as"><div class="as-val" style="color:var(--amber)" id="asReq">—</div><div class="as-lbl">Required Fields</div></div></div><!-- Users --><div class="card"><div class="ch"><div class="ct"> User Roles & Access</div></div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:13px"><div style="padding:14px;border:1px solid #ddd6fe;border-radius:var(--r);background:var(--pd)"><div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><div style="width:38px;height:38px;border-radius:8px;background:#ede9fe;color:var(--purple);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700">KA</div><div><div style="font-size:13px;font-weight:600">Kartik Agarwal</div><div style="font-size:11px;color:var(--purple);font-weight:600">Administrator</div></div></div><div style="font-size:11px;color:var(--t3);line-height:1.6">Full access to all fields, permissions management, and admin panel.</div><div style="margin-top:10px;display:flex;gap:5px;flex-wrap:wrap"><span class="badge" style="background:var(--pd);color:var(--purple)">View All</span><span class="badge" style="background:var(--pd);color:var(--purple)">Edit All</span><span class="badge" style="background:var(--pd);color:var(--purple)">Admin</span></div></div><div style="padding:14px;border:1px solid #bbf7d0;border-radius:var(--r);background:var(--gd)"><div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><div style="width:38px;height:38px;border-radius:8px;background:#dcfce7;color:var(--green);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700">TB</div><div><div style="font-size:13px;font-weight:600">Tanya BB</div><div style="font-size:11px;color:var(--green);font-weight:600">Account Manager</div></div></div><div style="font-size:11px;color:var(--t3);line-height:1.6">View all data. Edit access only for fields marked editable by admin.</div><div style="margin-top:10px;display:flex;gap:5px;flex-wrap:wrap"><span class="badge bg">View All</span><span class="badge bg">Edit Unlocked</span><span class="badge bgr">No Admin</span></div></div><div style="padding:14px;border:1px solid #bbf7d0;border-radius:var(--r);background:var(--gd)"><div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><div style="width:38px;height:38px;border-radius:8px;background:#dcfce7;color:var(--green);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700">MK</div><div><div style="font-size:13px;font-weight:600">Maria Khan</div><div style="font-size:11px;color:var(--green);font-weight:600">Account Manager</div></div></div><div style="font-size:11px;color:var(--t3);line-height:1.6">View all data. Edit access only for fields marked editable by admin.</div><div style="margin-top:10px;display:flex;gap:5px;flex-wrap:wrap"><span class="badge bg">View All</span><span class="badge bg">Edit Unlocked</span><span class="badge bgr">No Admin</span></div></div></div></div><div id="adminFieldsWrap"></div></div>
+</div><!-- MODALS --><!-- ADD/EDIT POC -->
+<div class="ov" id="pocM"><div class="modal"><div class="m-top"><div><div class="m-title" id="pocMTitle">Add Contact</div></div><button class="m-close" onclick="closeM('pocM')"></button></div><input type="hidden" id="poc-edit-id"><div class="fg"><div class="fgrp"><label class="flbl">Full Name <span class="req">*</span></label><input class="fi" id="p-nm" type="text" placeholder="Full name"><span class="ferr" id="e-pnm">Required</span></div><div class="fgrp"><label class="flbl">Job Title</label><input class="fi" id="p-tt" type="text" placeholder="e.g. Marketing Director"></div><div class="fgrp"><label class="flbl">Email <span class="req">*</span></label><input class="fi" id="p-em" type="email" placeholder="name@company.ae" oninput="vEm(this,'e-pem')"><span class="ferr" id="e-pem">Enter valid email</span></div><div class="fgrp"><label class="flbl">Phone <span class="req">*</span></label><input class="fi" id="p-ph" type="tel" placeholder="+971 XX XXX XXXX" oninput="vPh(this,'e-pph')"><span class="ferr" id="e-pph">Enter valid phone</span></div><div class="fgrp"><label class="flbl">Department</label><select class="fs" id="p-dp"><option value="">— Select —</option><option>Marketing</option><option>Procurement</option><option>Finance</option><option>IT</option><option>Operations</option><option>Legal</option><option>HR</option><option>Other</option></select></div><div class="fgrp"><label class="flbl">WhatsApp</label><div class="row" style="margin-top:8px"><label class="tg"><input type="checkbox" id="p-wa" checked><span class="tgs"></span></label><span style="font-size:13px;color:var(--t2)">Available on WhatsApp</span></div></div></div><div class="m-foot"><button class="btn btn-o" onclick="closeM('pocM')">Cancel</button><button class="btn btn-p" id="pocMSaveBtn" onclick="savePOC()">Add Contact</button></div></div>
+</div><!-- POC DETAIL -->
+<div class="ov" id="pocDetailM"><div class="modal xlg"><div class="m-top"><div><div class="m-title" id="pdTitle">—</div><div class="m-sub" id="pdSub">—</div></div><button class="m-close" onclick="closeM('pocDetailM')"></button></div><div id="pocDetailBody"></div><div class="m-foot"><button class="btn btn-o" onclick="closeM('pocDetailM')">Close</button></div></div>
+</div><!-- ADD/EDIT PROJECT -->
+<div class="ov" id="projM"><div class="modal wide"><div class="m-top"><div><div class="m-title" id="projMTitle">Add Project</div></div><button class="m-close" onclick="closeM('projM')"></button></div><input type="hidden" id="pj-edit-id"><div class="fg"><div class="fgrp"><label class="flbl">Project Name <span class="req">*</span></label><input class="fi" id="pj-nm" type="text" placeholder="e.g. Brand Campaign Q2 2025"><span class="ferr" id="e-pjnm">Required</span></div><div class="fgrp"><label class="flbl">Campaign / Order Ref</label><input class="fi" id="pj-rf" type="text" placeholder="e.g. CAM-2025-041"></div><div class="fgrp"><label class="flbl">Status</label><select class="fs" id="pj-st"><option>Active</option><option>On Hold</option><option>Completed</option><option>Cancelled</option></select></div><div class="fgrp"><label class="flbl">Budget (AED) <span class="req">*</span></label><input class="fi" id="pj-bg" type="number" placeholder="e.g. 75000" min="0"><span class="ferr" id="e-pjbg">Enter valid amount</span></div><div class="fgrp"><label class="flbl">Start Date <span class="req">*</span></label><input class="fi" id="pj-sd" type="date"><span class="ferr" id="e-pjsd">Required</span></div><div class="fgrp"><label class="flbl">End Date <span class="req">*</span></label><input class="fi" id="pj-ed" type="date"><span class="ferr" id="e-pjed">Must be after start</span></div><div class="fgrp"><label class="flbl">PO Number</label><input class="fi" id="pj-po" type="text" placeholder="e.g. PO-DU-2025-00341"></div><div class="fgrp"><label class="flbl">Payment Terms (override)</label><select class="fs" id="pj-pt"><option value="">Use Master Default</option><option>15 Days</option><option>30 Days</option><option>45 Days</option><option>60 Days</option><option>90 Days</option></select></div><div class="fgrp"><label class="flbl">Payment Status</label><select class="fs" id="pj-ps"><option>Pending</option><option>Invoiced</option><option>Paid</option><option>Overdue</option></select></div><div class="fgrp"><label class="flbl">Assigned POC</label><select class="fs" id="pj-poc"><option value="">— None —</option></select></div><div class="fgrp"><label class="flbl">Linked Sub Division</label><select class="fs" id="pj-sub"><option value="">— None —</option></select></div><div class="fgrp"><label class="flbl">Payment Terms</label><select class="fs" id="pj-pt2" style="display:none"></select></div><div class="fgrp s2"><label class="flbl">Deliverables Summary</label><textarea class="ft" id="pj-dl" placeholder="List key deliverables…" style="min-height:70px"></textarea></div></div><div class="m-foot"><button class="btn btn-o" onclick="closeM('projM')">Cancel</button><button class="btn btn-p" id="projMSaveBtn" onclick="saveProject()">Add Project</button></div></div>
+</div><!-- PROJECT DETAIL -->
+<div class="ov" id="projDetailM"><div class="modal xlg"><div class="m-top"><div><div class="m-title" id="prjDTitle">—</div><div class="m-sub" id="prjDSub">—</div></div><button class="m-close" onclick="closeM('projDetailM')"></button></div><div id="projDetailBody"></div><div class="m-foot" id="projDetailFoot"></div></div>
+</div><!-- ADD/EDIT PARTNER -->
+<div class="ov" id="addPartnerM"><div class="modal wide"><div class="m-top"><div><div class="m-title" id="addPartnerTitle">Add New Partner</div></div><button class="m-close" onclick="closeM('addPartnerM')"></button></div><input type="hidden" id="np-edit-id"><div class="slbl" style="margin-top:0">Company Information</div><div class="fg"><div class="fgrp"><label class="flbl">Company Name <span class="req">*</span></label><input class="fi" id="np-nm" type="text" placeholder="Company name"><span class="ferr" id="e-npnm">Required</span></div><div class="fgrp"><label class="flbl">Industry</label><select class="fs" id="np-ind"><option>Telecommunications</option><option>Technology</option><option>Real Estate</option><option>Finance</option><option>Healthcare</option><option>Government</option><option>Retail</option><option>Other</option></select></div><div class="fgrp"><label class="flbl">Status</label><select class="fs" id="np-st"><option>Prospect</option><option>Active</option><option>Inactive</option><option>On Hold</option></select></div><div class="fgrp"><label class="flbl">Country</label><select class="fs" id="np-country"><option>UAE</option><option>Saudi Arabia</option><option>Qatar</option><option>Kuwait</option><option>Bahrain</option><option>Oman</option><option>Other</option></select></div><div class="fgrp"><label class="flbl">Phone <span class="req">*</span></label><input class="fi" id="np-ph" type="tel" placeholder="+971 XX XXX XXXX" oninput="vPh(this,'e-npph')"><span class="ferr" id="e-npph">Enter valid phone</span></div><div class="fgrp"><label class="flbl">Email</label><input class="fi" id="np-em" type="email" placeholder="info@company.ae" oninput="vEm(this,'e-npem')"><span class="ferr" id="e-npem">Enter valid email</span></div><div class="fgrp"><label class="flbl">Website</label><input class="fi" id="np-web" type="url" placeholder="www.company.ae"></div><div class="fgrp"><label class="flbl">Account Manager</label><select class="fs" id="np-mgr"><option>Tanya BB</option><option>Maria Khan</option><option>Kartik Agarwal</option></select></div><div class="fgrp s2"><label class="flbl">Head Office Address</label><input class="fi" id="np-addr" type="text" placeholder="Full address"></div><div class="fgrp"><label class="flbl">TRN / VAT Number</label><input class="fi" id="np-trn" type="text" placeholder="15-digit TRN" oninput="vTRN(this,'e-nptrn')"><span class="ferr" id="e-nptrn">Must be 15 digits</span></div><div class="fgrp"><label class="flbl">Partner Type</label><select class="fs" id="np-type"><option>Corporate</option><option>SME</option><option>Government</option><option>Agency</option></select></div></div><div class="div" id="np-docs-section"></div><div class="slbl" id="np-docs-lbl">Legal Documents <span class="req">*</span><span style="font-size:11px;color:var(--red);font-weight:400"> (Both mandatory for new partners)</span></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:13px" id="np-docs-grid"><div class="fgrp"><label class="flbl">Trade License (TL) <span class="req">*</span></label><div class="upz" id="nptlZ" onclick="document.getElementById('nptlF').click()" ondragover="dOv(event,'nptlZ')" ondragleave="dLv('nptlZ')" ondrop="dDp(event,'nptlF','nptlFl')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:.3;display:block;margin:0 auto"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><p>Click or drag to upload</p><span>PDF, JPG, PNG — max 10MB</span><input type="file" id="nptlF" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="upFile(this,'nptlFl');nptlUp=true"></div><div class="uploaded" id="nptlFl"></div><span class="ferr" id="e-nptl">Trade License required</span></div><div class="fgrp"><label class="flbl">VAT Certificate <span class="req">*</span></label><div class="upz" id="npvatZ" onclick="document.getElementById('npvatF').click()" ondragover="dOv(event,'npvatZ')" ondragleave="dLv('npvatZ')" ondrop="dDp(event,'npvatF','npvatFl')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:.3;display:block;margin:0 auto"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><p>Click or drag to upload</p><span>PDF, JPG, PNG — max 10MB</span><input type="file" id="npvatF" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="upFile(this,'npvatFl');npvatUp=true"></div><div class="uploaded" id="npvatFl"></div><span class="ferr" id="e-npvat">VAT Certificate required</span></div></div><div class="m-foot"><button class="btn btn-o" onclick="closeM('addPartnerM')">Cancel</button><button class="btn btn-p" id="addPartnerSaveBtn" onclick="savePartner()">Create Partner</button></div></div>
+</div><!-- ADD/EDIT SUB DIVISION -->
+<div class="ov" id="sdM"><div class="modal xlg"><div class="m-top"><div><div class="m-title" id="sdMTitle">Add Sub Division</div><div class="m-sub">Linked to <span id="sdMParent">—</span></div></div><button class="m-close" onclick="closeM('sdM')"></button></div><input type="hidden" id="sd-edit-id"><div class="slbl" style="margin-top:0">Division Information</div><div class="fg"><div class="fgrp"><label class="flbl">Division Name <span class="req">*</span></label><input class="fi" id="sd-nm" type="text" placeholder="e.g. DU Business Solutions"><span class="ferr" id="e-sdnm">Required</span></div><div class="fgrp"><label class="flbl">Division Type</label><select class="fs" id="sd-tp"><option>Business Unit</option><option>Regional Office</option><option>Department</option><option>Subsidiary</option><option>Brand</option><option>Other</option></select></div><div class="fgrp"><label class="flbl">Industry</label><select class="fs" id="sd-ind"><option value="">— Same as parent —</option><option>Telecommunications</option><option>Technology</option><option>Real Estate</option><option>Finance</option><option>Healthcare</option><option>Government</option><option>Retail</option><option>Other</option></select></div><div class="fgrp"><label class="flbl">Status</label><select class="fs" id="sd-st"><option>Active</option><option>Inactive</option><option>On Hold</option></select></div><div class="fgrp"><label class="flbl">Head of Division</label><input class="fi" id="sd-hd" type="text" placeholder="Full name"></div><div class="fgrp"><label class="flbl">Account Manager</label><select class="fs" id="sd-mgr"><option>Tanya BB</option><option>Maria Khan</option><option>Kartik Agarwal</option></select></div><div class="fgrp"><label class="flbl">Phone <span class="req">*</span></label><input class="fi" id="sd-ph" type="tel" placeholder="+971 XX XXX XXXX" oninput="vPh(this,'e-sdph')"><span class="ferr" id="e-sdph">Enter valid phone</span></div><div class="fgrp"><label class="flbl">Email <span class="req">*</span></label><input class="fi" id="sd-em" type="email" placeholder="division@company.ae" oninput="vEm(this,'e-sdem')"><span class="ferr" id="e-sdem">Enter valid email</span></div><div class="fgrp"><label class="flbl">Website</label><input class="fi" id="sd-web" type="url" placeholder="www.division.ae"></div><div class="fgrp"><label class="flbl">Country / Emirate</label><select class="fs" id="sd-ct"><option>Dubai</option><option>Abu Dhabi</option><option>Sharjah</option><option>Ajman</option><option>Ras Al Khaimah</option><option>Fujairah</option><option>Other UAE</option><option>Saudi Arabia</option><option>Qatar</option><option>Other</option></select></div><div class="fgrp s2"><label class="flbl">Office Address</label><input class="fi" id="sd-addr" type="text" placeholder="Full office address"></div><div class="fgrp"><label class="flbl">TRN / VAT Number</label><input class="fi" id="sd-trn" type="text" placeholder="15-digit TRN" oninput="vTRN(this,'e-sdtrn')"><span class="ferr" id="e-sdtrn">Must be 15 digits</span></div><div class="fgrp"><label class="flbl">Date Established</label><input class="fi" id="sd-dt" type="date"></div><div class="fgrp s2"><label class="flbl">Point of Contact <span class="req">*</span></label><select class="fs" id="sd-poc"><option value="">— Select a POC —</option></select><span class="ferr" id="e-sdpoc">Please assign a POC</span><span class="fhint">Primary contact for this sub division</span></div><div class="fgrp s2"><label class="flbl">Notes</label><textarea class="ft" id="sd-nt" placeholder="Notes about this sub division…" style="min-height:65px"></textarea></div></div><div class="div"></div><div class="slbl">Legal Documents</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:13px"><div class="fgrp"><label class="flbl">Trade License</label><div class="upz" id="sdtlZ" onclick="document.getElementById('sdtlF').click()" ondragover="dOv(event,'sdtlZ')" ondragleave="dLv('sdtlZ')" ondrop="dDp(event,'sdtlF','sdtlFl')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:.3;display:block;margin:0 auto"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><p>Click or drag to upload</p><span>PDF, JPG, PNG — max 10MB</span><input type="file" id="sdtlF" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="upFile(this,'sdtlFl')"></div><div class="uploaded" id="sdtlFl"></div></div><div class="fgrp"><label class="flbl">VAT Certificate</label><div class="upz" id="sdvatZ" onclick="document.getElementById('sdvatF').click()" ondragover="dOv(event,'sdvatZ')" ondragleave="dLv('sdvatZ')" ondrop="dDp(event,'sdvatF','sdvatFl')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:.3;display:block;margin:0 auto"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><p>Click or drag to upload</p><span>PDF, JPG, PNG — max 10MB</span><input type="file" id="sdvatF" accept=".pdf,.jpg,.jpeg,.png" style="display:none" onchange="upFile(this,'sdvatFl')"></div><div class="uploaded" id="sdvatFl"></div></div></div><div class="m-foot"><button class="btn btn-d btn-sm" id="sdDelBtn" style="display:none;margin-right:auto" onclick="deleteSD()">Delete Division</button><button class="btn btn-o" onclick="closeM('sdM')">Cancel</button><button class="btn btn-p" id="sdSaveBtn" onclick="saveSD()">Add Sub Division</button></div></div>
+</div><!-- LOG ENTRY -->
+<div class="ov" id="logM"><div class="modal" style="width:460px"><div class="m-top"><div class="m-title">Add Activity Entry</div><button class="m-close" onclick="closeM('logM')"></button></div><div class="fgrp"><label class="flbl">Activity Type</label><select class="fs" id="l-tp"><option>Call</option><option>Email</option><option>Meeting</option><option>Document Sent</option><option>Payment Received</option><option>Task Completed</option><option>Follow-up Required</option><option>Other</option></select></div><div class="fgrp" style="margin-top:12px"><label class="flbl">Description <span class="req">*</span></label><textarea class="ft" id="l-tx" placeholder="Describe the activity…"></textarea><span class="ferr" id="e-ltx">Required</span></div><div class="m-foot"><button class="btn btn-o" onclick="closeM('logM')">Cancel</button><button class="btn btn-p" onclick="saveLog()">Add Entry</button></div></div>
+</div><!-- ADD ORDER (in project) -->
+<div class="ov" id="addOrderM"><div class="modal"><div class="m-top"><div><div class="m-title">Add Order</div><div class="m-sub" id="addOrderProjNm">—</div></div><button class="m-close" onclick="closeM('addOrderM')"></button></div><input type="hidden" id="ao-proj-id"><div class="fg"><div class="fgrp s2"><label class="flbl">Order / Deliverable Name <span class="req">*</span></label><input class="fi" id="ao-nm" type="text" placeholder="e.g. OOH Billboard Creative — 4 formats"><span class="ferr" id="e-aonm">Required</span></div><div class="fgrp"><label class="flbl">Quantity <span class="req">*</span></label><input class="fi" id="ao-qty" type="number" placeholder="1" min="1" value="1"><span class="ferr" id="e-aoqty">Min 1</span></div><div class="fgrp"><label class="flbl">Amount (AED) <span class="req">*</span></label><input class="fi" id="ao-amt" type="number" placeholder="0" min="0"><span class="ferr" id="e-aoamt">Enter valid amount</span></div><div class="fgrp"><label class="flbl">Delivery Status</label><select class="fs" id="ao-ds"><option>Pending</option><option>Delivered</option></select></div><div class="fgrp"><label class="flbl">Due Date</label><input class="fi" id="ao-due" type="date"></div></div><div class="m-foot"><button class="btn btn-o" onclick="closeM('addOrderM')">Cancel</button><button class="btn btn-p" onclick="saveOrder()">Add Order</button></div></div>
+</div><div class="toasts-c" id="TC"></div><script>
+'use strict';
+// 
+// USERS
+// 
+const USERS={
+ kartik:{nm:'Kartik Agarwal',role:'admin',av:'KA',bg:'var(--pd)',c:'var(--purple)',rl:'Administrator'},
+ tanya: {nm:'Tanya BB', role:'manager',av:'TB',bg:'#fff0f2',c:'var(--du)', rl:'Account Manager'},
+ maria: {nm:'Maria Khan', role:'manager',av:'MK',bg:'#eff6ff',c:'var(--dp)', rl:'Account Manager'},
+};
+let CU=null; // current user
+
+// 
+// DATA
+// 
+let nextId=500;
+const nid=()=>nextId++;
+const genOID=()=>'AE-'+Math.floor(600000+Math.random()*399999);
+const nowStr=()=>{const n=new Date();return n.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})+', '+n.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});};
+
+let PD=[
+ {
+ id:1, nm:'DU Telecom', ind:'Telecommunications', li:'DU', lc:'#C8102E', lb:'bdu', lbt:'Telecommunications',
+ profile:{status:'Active',country:'UAE',ph:'+971 4 360 0000',web:'www.du.ae',addr:'du Headquarters, Building 3, Media City, Dubai, UAE',trn:'100123456789001',mgr:'Tanya BB',onb:'2023-03-01',type:'Corporate'},
+ billing:{method:'PO After Invoice',terms:'45 Days',currency:'AED',cname:'Ahmed Al Zarouni',cemail:'billing@du.ae',cphone:'+971 50 123 4567',caddr:'',trn:'100123456789001',vat:'Yes — 5% VAT applies',instructions:'Always include PO reference on invoice. CC finance@du.ae. Two physical copies required.'},
+ notes:'Key strategic account — DU is one of our top B2B partners. Sarah is primary decision maker. POs typically approved within 2 weeks. Always CC Ahmed from Finance.',
+ pocs:[
+ {id:101,nm:'Sarah Al Marzouqi',tt:'Marketing Director',em:'sarah.m@du.ae',ph:'+971 50 111 2233',dp:'Marketing',wa:true,b2c:[
+ {id:1001,oid:'AE-653482',nm:'Flower Hamper — Anniversary',dt:'Apr 14, 2025',amt:450,st:'Delivered'},
+ {id:1002,oid:'AE-653491',nm:'Corporate Gift Box x5',dt:'Mar 28, 2025',amt:1200,st:'Delivered'},
+ {id:1003,oid:'AE-653504',nm:'Birthday Bouquet',dt:'Apr 19, 2025',amt:280,st:'Pending'},
+ ]},
+ {id:102,nm:'Khalid Al Falasi',tt:'Procurement Head',em:'k.falasi@du.ae',ph:'+971 55 444 5566',dp:'Procurement',wa:true,b2c:[
+ {id:1004,oid:'AE-653518',nm:"Rose Bouquet — Mother's Day",dt:'Apr 10, 2025',amt:320,st:'Delivered'},
+ ]},
+ {id:103,nm:'Priya Nair',tt:'Finance Manager',em:'p.nair@du.ae',ph:'+971 52 777 8899',dp:'Finance',wa:false,b2c:[]},
+ {id:104,nm:'Ahmed Al Zarouni',tt:'Accounts Payable',em:'billing@du.ae',ph:'+971 50 123 4567',dp:'Finance',wa:true,b2c:[
+ {id:1005,oid:'AE-653527',nm:'Gift Basket — Eid',dt:'Mar 20, 2025',amt:650,st:'Delivered'},
+ {id:1006,oid:'AE-653539',nm:'Floral Arrangement — Office',dt:'Apr 18, 2025',amt:890,st:'Pending'},
+ ]},
+ ],
+ projs:[
+ {id:201,nm:'DU Brand Ramadan 2025',rf:'CAM-DU-2025-011',st:'Active',bg:180000,sd:'2025-02-01',ed:'2025-04-30',po:'PO-DU-00441',pt:'45 Days',ps:'Invoiced',subId:301,dl:'Full brand campaign: OOH, digital, social, radio.',pocIds:[101,102],
+ orders:[
+ {id:2001,oid:'AE-741001',nm:'OOH Billboard Creative — 4 formats',qty:4,amt:32000,ds:'Delivered',due:'2025-02-28'},
+ {id:2002,oid:'AE-741002',nm:'Social Media Content Pack',qty:12,amt:18000,ds:'Delivered',due:'2025-03-10'},
+ {id:2003,oid:'AE-741003',nm:'Radio Script & Production',qty:2,amt:15000,ds:'Pending',due:'2025-04-15'},
+ {id:2004,oid:'AE-741004',nm:'Email Newsletter Design',qty:6,amt:9000,ds:'Pending',due:'2025-04-20'},
+ ]
+ },
+ {id:202,nm:'5G Launch Campaign',rf:'CAM-DU-2025-003',st:'Completed',bg:250000,sd:'2025-01-01',ed:'2025-03-15',po:'PO-DU-00380',pt:'30 Days',ps:'Paid',subId:301,dl:'ATL + BTL campaign for 5G launch across UAE.',pocIds:[101,102],
+ orders:[
+ {id:2011,oid:'AE-742001',nm:'TVC Production — 30s + 15s',qty:2,amt:85000,ds:'Delivered',due:'2025-02-01'},
+ {id:2012,oid:'AE-742002',nm:'Press Ads — Full Page x3',qty:3,amt:42000,ds:'Delivered',due:'2025-02-15'},
+ {id:2013,oid:'AE-742003',nm:'Digital Burst — Display Set',qty:20,amt:28000,ds:'Delivered',due:'2025-03-01'},
+ ]
+ },
+ {id:203,nm:'DU Corporate Gifting Q2',rf:'GFT-DU-2025-002',st:'Active',bg:48000,sd:'2025-04-01',ed:'2025-06-30',po:'PO-DU-00489',pt:'45 Days',ps:'Pending',subId:302,dl:'Custom branded gift boxes x 500 units.',pocIds:[104],
+ orders:[
+ {id:2021,oid:'AE-743001',nm:'Premium Hamper — Executive',qty:100,amt:18000,ds:'Delivered',due:'2025-04-20'},
+ {id:2022,oid:'AE-743002',nm:'Standard Gift Box',qty:400,amt:24000,ds:'Pending',due:'2025-05-15'},
+ ]
+ },
+ {id:204,nm:'Annual Partner Summit',rf:'EVT-DU-2025-001',st:'On Hold',bg:95000,sd:'2025-06-01',ed:'2025-07-31',po:'',pt:'',ps:'Pending',subId:null,dl:'Event management + branding for annual partner summit.',pocIds:[101],
+ orders:[
+ {id:2031,oid:'AE-744001',nm:'Venue Decoration & Branding',qty:1,amt:45000,ds:'Pending',due:'2025-06-20'},
+ {id:2032,oid:'AE-744002',nm:'Event Collateral Pack',qty:1,amt:22000,ds:'Pending',due:'2025-06-25'},
+ {id:2033,oid:'AE-744003',nm:'Gift Bags — VIP x 50',qty:50,amt:18000,ds:'Pending',due:'2025-07-01'},
+ ]
+ },
+ ],
+ subs:[
+ {id:301,nm:'DU Business Solutions',tp:'Business Unit',ind:'',st:'Active',hd:'Mohammed Al Rashid',mgr:'Tanya BB',ph:'+971 4 360 0100',em:'business@du.ae',web:'',ct:'Dubai',addr:'du Business Hub, DIFC, Dubai',trn:'',dt:'',nt:'Handles all B2B enterprise accounts.',pocId:102,tlFile:'',vatFile:''},
+ {id:302,nm:'DU Consumer Division',tp:'Department',ind:'',st:'Active',hd:'Layla Al Nuaimi',mgr:'Maria Khan',ph:'+971 4 360 0200',em:'consumer@du.ae',web:'',ct:'Dubai',addr:'du HQ, Media City, Dubai',trn:'',dt:'',nt:'Consumer retail & residential products.',pocId:104,tlFile:'',vatFile:''},
+ ],
+ acts:[
+ {tp:'Meeting',tx:'Quarterly review with Sarah and Khalid. Ramadan campaign on track. New brief expected for Q3.',tm:'Today, 10:00 AM'},
+ {tp:'Email',tx:'Sent PO reminder for Annual Partner Summit. Awaiting procurement approval.',tm:'Yesterday, 2:45 PM'},
+ {tp:'Payment Received',tx:'AED 250,000 received for 5G Launch Campaign (PO-DU-00380). Cleared in full.',tm:'Apr 12, 2025'},
+ {tp:'Call',tx:'Call with Priya re: Q2 gifting order specs. Confirmed 500 units, delivery by May 15.',tm:'Apr 8, 2025'},
+ ]
+ },
+ {
+ id:2, nm:'Dubai Police', ind:'Government & Security', li:'DP', lc:'#003087', lb:'bdp', lbt:'Government',
+ profile:{status:'Active',country:'UAE',ph:'+971 4 609 2222',web:'www.dubaipolice.gov.ae',addr:'Dubai Police General HQ, Al Twar 1, Dubai, UAE',trn:'100009876543210',mgr:'Maria Khan',onb:'2022-09-15',type:'Government'},
+ billing:{method:'PO After Invoice',terms:'60 Days',currency:'AED',cname:'Tariq Al Blooshi',cemail:'procurement@dubaipolice.gov.ae',cphone:'+971 4 609 2240',caddr:'Dubai Police HQ, Procurement Dept',trn:'100009876543210',vat:'Exempt',instructions:'Official purchase order required before work commences. Invoice must reference Ministry approval number. Submit to procurement department only.'},
+ notes:'Government account — all approvals require official PO from procurement. Long lead times expected. Key contact is Maj. Faisal for all media/marketing work.',
+ pocs:[
+ {id:111,nm:'Maj. Faisal Al Muhairi',tt:'Media & Communications',em:'f.almuhairi@dubaipolice.gov.ae',ph:'+971 50 888 7766',dp:'Marketing',wa:false,b2c:[]},
+ {id:112,nm:'Hessa Al Mansoori',tt:'Events Coordinator',em:'h.mansoori@dubaipolice.gov.ae',ph:'+971 55 333 4422',dp:'Operations',wa:true,b2c:[
+ {id:1101,oid:'AE-761101',nm:'Floral Centrepiece — Gala',dt:'Apr 10, 2025',amt:1200,st:'Delivered'},
+ {id:1102,oid:'AE-761102',nm:'Welcome Bouquet x 20',dt:'Apr 16, 2025',amt:800,st:'Pending'},
+ ]},
+ {id:113,nm:'Tariq Al Blooshi',tt:'Procurement Officer',em:'procurement@dubaipolice.gov.ae',ph:'+971 4 609 2240',dp:'Procurement',wa:false,b2c:[]},
+ ],
+ projs:[
+ {id:211,nm:'GITEX Security Pavilion 2025',rf:'EVT-DP-2025-003',st:'Active',bg:320000,sd:'2025-05-01',ed:'2025-10-15',po:'PO-DP-00234',pt:'60 Days',ps:'Pending',subId:311,dl:'Full pavilion design, branding, interactive displays, uniforms, collateral.',pocIds:[112,113],
+ orders:[
+ {id:2101,oid:'AE-810001',nm:'Pavilion Design & Branding',qty:1,amt:95000,ds:'Pending',due:'2025-07-01'},
+ {id:2102,oid:'AE-810002',nm:'Interactive Display Units',qty:4,amt:80000,ds:'Pending',due:'2025-08-01'},
+ {id:2103,oid:'AE-810003',nm:'Staff Uniforms — Custom Branded',qty:50,amt:35000,ds:'Pending',due:'2025-09-01'},
+ {id:2104,oid:'AE-810004',nm:'Event Collateral Pack',qty:1,amt:28000,ds:'Pending',due:'2025-09-15'},
+ ]
+ },
+ {id:212,nm:'National Day Celebrations',rf:'EVT-DP-2024-009',st:'Completed',bg:180000,sd:'2024-11-01',ed:'2024-12-02',po:'PO-DP-00198',pt:'45 Days',ps:'Paid',subId:311,dl:'Event decor, branded merchandise, parade collateral, digital signage.',pocIds:[111,112],
+ orders:[
+ {id:2111,oid:'AE-811001',nm:'Parade Float Decoration',qty:3,amt:55000,ds:'Delivered',due:'2024-11-20'},
+ {id:2112,oid:'AE-811002',nm:'Branded Merchandise Kit',qty:500,amt:48000,ds:'Delivered',due:'2024-11-25'},
+ {id:2113,oid:'AE-811003',nm:'Digital Signage Content',qty:8,amt:32000,ds:'Delivered',due:'2024-11-28'},
+ ]
+ },
+ {id:213,nm:'Community Awareness Campaign',rf:'CAM-DP-2025-001',st:'Active',bg:65000,sd:'2025-03-01',ed:'2025-05-31',po:'PO-DP-00219',pt:'60 Days',ps:'Invoiced',subId:311,dl:'Social media, printed materials, public awareness billboards.',pocIds:[111],
+ orders:[
+ {id:2121,oid:'AE-812001',nm:'Billboard Design x10',qty:10,amt:22000,ds:'Delivered',due:'2025-03-20'},
+ {id:2122,oid:'AE-812002',nm:'Social Media Content Pack',qty:16,amt:18000,ds:'Pending',due:'2025-04-15'},
+ {id:2123,oid:'AE-812003',nm:'Printed Awareness Brochure',qty:5000,amt:12000,ds:'Pending',due:'2025-04-30'},
+ ]
+ },
+ ],
+ subs:[
+ {id:311,nm:'Dubai Police Media Office',tp:'Department',ind:'',st:'Active',hd:'Maj. Faisal Al Muhairi',mgr:'Maria Khan',ph:'+971 4 609 2230',em:'media@dubaipolice.gov.ae',web:'',ct:'Dubai',addr:'Dubai Police HQ, Al Twar, Dubai',trn:'',dt:'',nt:'Handles all media, PR and marketing initiatives.',pocId:111,tlFile:'',vatFile:''},
+ ],
+ acts:[
+ {tp:'Email',tx:'Received updated brief from Maj. Faisal for GITEX Security Pavilion — new interactive zone added.',tm:'Today, 8:30 AM'},
+ {tp:'Meeting',tx:'Site visit to Dubai Police HQ. Confirmed space for GITEX pavilion — 800 sqm.',tm:'Apr 15, 2025'},
+ {tp:'Payment Received',tx:'AED 180,000 received for National Day Celebrations (PO-DP-00198).',tm:'Jan 20, 2025'},
+ ]
+ }
+];
+
+// 
+// FIELD REGISTRY & PERMISSIONS
+// 
+const FR=[
+ // Company Profile
+ {id:'f-nm', lbl:'Company Name', tab:'Company Profile', sec:'Company Info', req:true, type:'text'},
+ {id:'f-ind', lbl:'Industry', tab:'Company Profile', sec:'Company Info', req:true, type:'select'},
+ {id:'f-status', lbl:'Status', tab:'Company Profile', sec:'Company Info', req:false, type:'select'},
+ {id:'f-country',lbl:'Country', tab:'Company Profile', sec:'Company Info', req:false, type:'select'},
+ {id:'f-ph', lbl:'Phone Number', tab:'Company Profile', sec:'Company Info', req:true, type:'tel'},
+ {id:'f-web', lbl:'Website', tab:'Company Profile', sec:'Company Info', req:false, type:'url'},
+ {id:'f-addr', lbl:'Head Office Address', tab:'Company Profile', sec:'Company Info', req:false, type:'text'},
+ {id:'f-trn', lbl:'TRN / VAT Number', tab:'Company Profile', sec:'Company Info', req:false, type:'text'},
+ {id:'f-mgr', lbl:'Account Manager', tab:'Company Profile', sec:'Company Info', req:false, type:'select'},
+ {id:'f-onb', lbl:'Date Onboarded', tab:'Company Profile', sec:'Company Info', req:false, type:'date'},
+ {id:'f-type', lbl:'Partner Type', tab:'Company Profile', sec:'Company Info', req:false, type:'select'},
+ // Partner info (Edit Partner modal)
+ {id:'np-nm', lbl:'Partner Name (Edit)', tab:'Company Profile', sec:'Partner Edit', req:true, type:'text', virt:true},
+ {id:'np-ind', lbl:'Industry (Edit)', tab:'Company Profile', sec:'Partner Edit', req:false, type:'select',virt:true},
+ {id:'np-st', lbl:'Status (Edit)', tab:'Company Profile', sec:'Partner Edit', req:false, type:'select',virt:true},
+ {id:'np-ph', lbl:'Phone (Edit)', tab:'Company Profile', sec:'Partner Edit', req:true, type:'tel', virt:true},
+ // Contacts (modal fields)
+ {id:'p-nm', lbl:'Contact: Name', tab:'Contacts', sec:'POC Fields', req:true, type:'text', virt:true},
+ {id:'p-tt', lbl:'Contact: Title', tab:'Contacts', sec:'POC Fields', req:false, type:'text', virt:true},
+ {id:'p-em', lbl:'Contact: Email', tab:'Contacts', sec:'POC Fields', req:true, type:'email',virt:true},
+ {id:'p-ph', lbl:'Contact: Phone', tab:'Contacts', sec:'POC Fields', req:true, type:'tel', virt:true},
+ {id:'p-dp', lbl:'Contact: Department', tab:'Contacts', sec:'POC Fields', req:false, type:'select',virt:true},
+ // Projects (modal fields)
+ {id:'pj-nm', lbl:'Project Name', tab:'Projects', sec:'Project Fields', req:true, type:'text', virt:true},
+ {id:'pj-rf', lbl:'Campaign Reference', tab:'Projects', sec:'Project Fields', req:false, type:'text', virt:true},
+ {id:'pj-st', lbl:'Project Status', tab:'Projects', sec:'Project Fields', req:false, type:'select',virt:true},
+ {id:'pj-bg', lbl:'Budget (AED)', tab:'Projects', sec:'Project Fields', req:true, type:'number',virt:true},
+ {id:'pj-sd', lbl:'Start Date', tab:'Projects', sec:'Project Fields', req:true, type:'date', virt:true},
+ {id:'pj-ed', lbl:'End Date', tab:'Projects', sec:'Project Fields', req:true, type:'date', virt:true},
+ {id:'pj-po', lbl:'PO Number', tab:'Projects', sec:'Project Fields', req:false, type:'text', virt:true},
+ {id:'pj-ps', lbl:'Payment Status', tab:'Projects', sec:'Project Fields', req:false, type:'select',virt:true},
+ {id:'pj-dl', lbl:'Deliverables', tab:'Projects', sec:'Project Fields', req:false, type:'textarea',virt:true},
+ // Sub Divisions
+ {id:'sd-nm', lbl:'Division Name', tab:'Sub Divisions', sec:'Division Fields',req:true, type:'text', virt:true},
+ {id:'sd-tp', lbl:'Division Type', tab:'Sub Divisions', sec:'Division Fields',req:false, type:'select',virt:true},
+ {id:'sd-ph', lbl:'Division Phone', tab:'Sub Divisions', sec:'Division Fields',req:true, type:'tel', virt:true},
+ {id:'sd-em', lbl:'Division Email', tab:'Sub Divisions', sec:'Division Fields',req:true, type:'email',virt:true},
+ {id:'sd-addr', lbl:'Division Address', tab:'Sub Divisions', sec:'Division Fields',req:false, type:'text', virt:true},
+ {id:'sd-trn', lbl:'Division TRN', tab:'Sub Divisions', sec:'Division Fields',req:false, type:'text', virt:true},
+ {id:'sd-poc', lbl:'Division POC', tab:'Sub Divisions', sec:'Division Fields',req:true, type:'select',virt:true},
+ {id:'sd-nt', lbl:'Division Notes', tab:'Sub Divisions', sec:'Division Fields',req:false, type:'textarea',virt:true},
+];
+
+// Default permissions
+let FP={};
+FR.forEach(f=>{FP[f.id]=true});
+// Lock sensitive by default
+['f-trn','f-mgr'].forEach(id=>{FP[id]=false});
+
+function applyPerms(){
+ if(!CU)return;
+ const isAdmin=CU.role==='admin';
+ FR.filter(f=>!f.virt).forEach(f=>{
+ const el=document.getElementById(f.id);
+ if(!el)return;
+ el.disabled=isAdmin?false:!FP[f.id];
+ el.style.opacity=(!isAdmin&&!FP[f.id])?'0.55':'';
+ });
+}
+
+// 
+// HELPERS
+// 
+const p=()=>PD[ci];
+let ci=0;
+const PAV=[{bg:'#fff0f2',c:'#C8102E'},{bg:'#eff6ff',c:'#003087'},{bg:'#f0fdf4',c:'#1a7a4a'},{bg:'#fefce8',c:'#b45309'},{bg:'#f5f3ff',c:'#7c3aed'},{bg:'#fff7ed',c:'#c2410c'}];
+const av=(i)=>{const c=PAV[i%PAV.length];return`background:${c.bg};color:${c.c}`};
+const ini=(s)=>s.split(' ').filter(Boolean).map(n=>n[0]).join('').slice(0,2).toUpperCase();
+const fd=(d)=>{if(!d)return'—';return new Date(d).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})};
+const stB=(s)=>({Active:'badge bg',Completed:'badge bb','On Hold':'badge ba',Cancelled:'badge bgr'}[s]||'badge bgr');
+const pyB=(s)=>({Paid:'badge bg',Invoiced:'badge bb',Pending:'badge ba',Overdue:'badge br'}[s]||'badge bgr');
+const dsB=(s)=>s==='Delivered'?'badge bg':'badge ba';
+const setSel=(id,v)=>{const el=document.getElementById(id);if(!el)return;for(let o of el.options)if(o.text===v||o.value===v){o.selected=true;break}};
+const setVal=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v||''};
+const getVal=(id)=>{const el=document.getElementById(id);return el?el.value.trim():''};
+const addLog=(type,text)=>{p().acts.unshift({tp:type,tx:text,tm:nowStr()})};
+
+// 
+// LOGIN / LOGOUT
+// 
+function login(uid){
+ CU=USERS[uid];
+ document.getElementById('LS').style.display='none';
+ document.getElementById('NAV').style.display='flex';
+ document.getElementById('APP').style.display='flex';
+ const av=document.getElementById('navAv');
+ av.textContent=CU.av; av.style.background=CU.bg; av.style.color=CU.c;
+ document.getElementById('navNm').textContent=CU.nm;
+ document.getElementById('navRl').textContent=CU.rl;
+ document.getElementById('navAdm').style.display=CU.role==='admin'?'flex':'none';
+ renderSidebar(); renderHeader(); renderOv(); applyPerms();
+}
+function logout(){
+ CU=null;
+ ['LS','NAV','APP','ADMIN'].forEach(id=>{
+ document.getElementById(id).style.display=id==='LS'?'flex':'none'
+ });
+}
+function goAdmin(btn){
+ if(CU?.role!=='admin'){toast('Access denied','error');return}
+ document.getElementById('APP').style.display='none';
+ document.getElementById('ADMIN').style.display='block';
+ document.querySelectorAll('.nl').forEach(b=>b.classList.remove('active'));
+ btn.classList.add('active');
+ renderAdmin();
+}
+function goBackCRM(){
+ document.getElementById('ADMIN').style.display='none';
+ document.getElementById('APP').style.display='flex';
+ document.querySelectorAll('.nl').forEach(b=>b.classList.remove('active'));
+ document.querySelectorAll('.nl')[0].classList.add('active');
+ applyPerms();
+}
+function navC(btn){
+ const txt=btn.textContent.trim();
+ if(txt.includes('Admin')){goAdmin(btn);return}
+ document.querySelectorAll('.nl').forEach(b=>b.classList.remove('active'));
+ btn.classList.add('active');
+ if(txt==='B2B Partners'){
+ document.getElementById('ADMIN').style.display='none';
+ document.getElementById('APP').style.display='flex';
+ applyPerms();
+ } else toast('Section coming soon','info');
+}
+
+// 
+// SIDEBAR
+// 
+function renderSidebar(){
+ const list=document.getElementById('pList');
+ list.innerHTML=PD.map((d,i)=>{
+ const dotCls=d.profile?.status==='Active'?'g':d.profile?.status==='On Hold'?'a':'r';
+ return`<div class="pi${i===ci?' active':''}" onclick="selP(this,${i})"><div class="plg" style="background:${d.lc+'22'};color:${d.lc};border-color:${d.lc+'44'}">${d.li}</div><div style="flex:1;min-width:0"><div class="pn">${d.nm}</div><div class="pc">${d.ind}</div></div><div class="pdot ${dotCls}"></div></div>`
+ }).join('');
+}
+function filterP(q){
+ document.querySelectorAll('.pi').forEach(el=>{
+ el.style.display=el.querySelector('.pn').textContent.toLowerCase().includes(q.toLowerCase())?'':'none'
+ });
+}
+function selP(el,idx){
+ document.querySelectorAll('.pi').forEach(i=>i.classList.remove('active'));
+ el.classList.add('active');
+ ci=idx;
+ renderHeader();renderOv();
+ if(document.getElementById('tab-profile').classList.contains('active')){renderProfile();renderSDs();}
+ if(document.getElementById('tab-pocs').classList.contains('active'))renderPOCs();
+ if(document.getElementById('tab-projects').classList.contains('active'))renderProjs();
+ if(document.getElementById('tab-notes').classList.contains('active')){renderActs();document.getElementById('notesArea').value=p().notes||'';}
+ applyPerms();
+}
+
+// 
+// HEADER
+// 
+function renderHeader(){
+ const d=p(); const pr=d.profile||{};
+ document.getElementById('phNm').textContent=d.nm;
+ document.getElementById('phLI').textContent=d.li;
+ document.getElementById('phLI').style.color=d.lc;
+ const statusBadge=stB(pr.status||'Active');
+ document.getElementById('phMeta').innerHTML=`
+ <div class="ph-mi"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2"/></svg>${pr.ph||'—'}</div><div class="ph-mi"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/></svg>${pr.country||'—'}</div><span class="${statusBadge}"> ${pr.status||'Active'}</span><span class="badge ${d.lb==='bdu'?'bdu':'bdp'}">${d.lbt}</span><span style="font-size:11px;color:var(--t3)">Manager: ${pr.mgr||'—'}</span>`;
+}
+
+// 
+// OVERVIEW
+// 
+function renderOv(){
+ const d=p();
+ const tot=d.projs.reduce((a,b)=>a+b.bg,0);
+ const pend=d.projs.filter(j=>j.ps!=='Paid').reduce((a,b)=>a+(b.ps==='Pending'?b.bg*.4:b.bg*.2),0);
+ const waC=d.pocs.filter(c=>c.wa).length;
+ document.getElementById('oP').textContent=d.projs.length;
+ document.getElementById('oPs').textContent=d.projs.filter(j=>j.st==='Active').length+' active';
+ document.getElementById('oPb').style.width=Math.min(d.projs.length*18,95)+'%';
+ document.getElementById('oR').textContent='AED '+(tot/1000).toFixed(0)+'K';
+ document.getElementById('oC').textContent=d.pocs.length;
+ document.getElementById('oCs').textContent=waC+' on WhatsApp';
+ document.getElementById('oCb').style.width=(d.pocs.length?Math.round(waC/d.pocs.length*100):0)+'%';
+ document.getElementById('oPay').textContent='AED '+Math.round(pend/1000)+'K';
+ document.getElementById('ovProjList').innerHTML=d.projs.slice(0,3).map(j=>`
+ <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)"><div><div style="font-size:13px;font-weight:600">${j.nm}</div><div style="font-size:11px;color:var(--t3);margin-top:2px">${j.rf||'—'} · AED ${j.bg.toLocaleString()}</div></div><div style="display:flex;gap:6px"><span class="${stB(j.st)}">${j.st}</span><span class="${pyB(j.ps)}">${j.ps}</span></div></div>`).join('')||'<div class="empty"><p>No projects yet.</p></div>';
+ document.getElementById('ovCtcList').innerHTML=d.pocs.slice(0,3).map((c,i)=>`
+ <div style="display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid var(--border)"><div style="width:33px;height:33px;border-radius:6px;${av(i)};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">${ini(c.nm)}</div><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600">${c.nm}</div><div style="font-size:11px;color:var(--t3)">${c.tt}</div></div>${c.wa?'<span title="WhatsApp" style="font-size:15px"></span>':''}
+ </div>`).join('')||'<div class="empty"><p>No contacts yet.</p></div>';
+}
+
+// 
+// PROFILE
+// 
+function renderProfile(){
+ const d=p(); const pr=d.profile||{};
+ setVal('f-nm',d.nm); setSel('f-ind',d.ind);
+ setSel('f-status',pr.status); setSel('f-country',pr.country);
+ setVal('f-ph',pr.ph); setVal('f-web',pr.web); setVal('f-addr',pr.addr);
+ setVal('f-trn',pr.trn); setSel('f-mgr',pr.mgr); setVal('f-onb',pr.onb); setSel('f-type',pr.type);
+}
+function saveProfile(){
+ const nm=getVal('f-nm');
+ if(!nm){showE('e-fnm');toast('Company name is required','error');return;}hideE('e-fnm');
+ const ph=getVal('f-ph');
+ if(ph&&!vPhone(ph)){toast('Enter a valid phone number','error');return;}
+ const trn=getVal('f-trn').replace(/\D/g,'');
+ if(trn&&trn.length!==15){toast('TRN must be 15 digits','error');return;}
+ p().nm=nm; p().ind=getVal('f-ind');
+ if(!p().profile)p().profile={};
+ Object.assign(p().profile,{
+ status:getVal('f-status'),country:getVal('f-country'),ph,web:getVal('f-web'),
+ addr:getVal('f-addr'),trn:getVal('f-trn'),mgr:getVal('f-mgr'),
+ onb:getVal('f-onb'),type:getVal('f-type')
+ });
+ renderHeader(); renderSidebar(); addLog('Task Completed',`Company profile updated for ${nm}`);
+ toast('Profile saved','success');
+}
+function updatePartnerStatus(val){
+ if(!p().profile)p().profile={};
+ p().profile.status=val;
+ renderHeader(); renderSidebar();
+ toast(`Status updated to: ${val}`,'success');
+ addLog('Task Completed',`Partner status changed to "${val}"`);
+}
+
+// 
+// 
+// POCs
+// 
+function renderPOCs(){
+ const list=document.getElementById('pocList');
+ const d=p();
+ if(!d.pocs.length){list.innerHTML='<div class="empty"><p>No contacts yet. Click Add Contact.</p></div>';return;}
+ list.innerHTML=d.pocs.map((c,i)=>`
+ <div class="poc-card" onclick="openPOCDetail(${c.id})"><div class="poc-av" style="${av(i)}">${ini(c.nm)}</div><div><div class="poc-nm">${c.nm}</div><div class="poc-tt">${c.tt}${c.dp?' · '+c.dp:''}</div></div><div class="poc-ct"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>${c.em}</div><div class="poc-ct"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07"/></svg>${c.ph}</div><div class="wa-w" onclick="event.stopPropagation()"><label class="tg"><input type="checkbox" ${c.wa?'checked':''} onchange="togWA(${c.id},this.checked)"><span class="tgs"></span></label><span style="color:${c.wa?'#25d366':'var(--t3)'}">WhatsApp</span></div><div class="poc-ac" onclick="event.stopPropagation()"><button class="btn btn-o btn-sm" onclick="openEditPOC(${c.id})">Edit</button><button class="btn btn-d btn-sm" onclick="delPOC(${c.id})">Remove</button></div></div>`).join('');
+}
+function openAddPOC(){
+ document.getElementById('poc-edit-id').value='';
+ document.getElementById('pocMTitle').textContent='Add Contact';
+ document.getElementById('pocMSaveBtn').textContent='Add Contact';
+ ['p-nm','p-tt','p-em','p-ph'].forEach(id=>setVal(id,''));
+ setVal('p-dp','');
+ document.getElementById('p-wa').checked=true;
+ openM('pocM');
+}
+function openEditPOC(id){
+ const c=p().pocs.find(x=>x.id===id);if(!c)return;
+ document.getElementById('poc-edit-id').value=id;
+ document.getElementById('pocMTitle').textContent='Edit Contact';
+ document.getElementById('pocMSaveBtn').textContent='Save Changes';
+ setVal('p-nm',c.nm); setVal('p-tt',c.tt); setVal('p-em',c.em); setVal('p-ph',c.ph);
+ setSel('p-dp',c.dp); document.getElementById('p-wa').checked=c.wa;
+ openM('pocM');
+}
+function savePOC(){
+ const nm=getVal('p-nm'),em=getVal('p-em'),ph=getVal('p-ph');
+ let ok=true;
+ if(!nm){showE('e-pnm');ok=false;}else hideE('e-pnm');
+ if(!vEmail(em)){showE('e-pem');ok=false;}else hideE('e-pem');
+ if(!vPhone(ph)){showE('e-pph');ok=false;}else hideE('e-pph');
+ if(!ok)return;
+ const editId=document.getElementById('poc-edit-id').value;
+ const data={nm,tt:getVal('p-tt'),em,ph,dp:getVal('p-dp'),wa:document.getElementById('p-wa').checked};
+ if(editId){
+ const c=p().pocs.find(x=>x.id==editId);
+ if(c){Object.assign(c,data);addLog('Task Completed',`Contact updated: ${nm}`);}
+ } else {
+ const newC={id:nid(),...data,b2c:[]};
+ p().pocs.push(newC);
+ addLog('Contacts','New contact added: '+nm);
+ }
+ renderPOCs();renderOv();closeM('pocM');
+ toast(editId?'Contact updated':'Contact added','success');
+}
+function delPOC(id){
+ if(!confirm('Remove this contact?'))return;
+ const c=p().pocs.find(x=>x.id===id);
+ p().pocs=p().pocs.filter(x=>x.id!==id);
+ addLog('Other',`Contact removed: ${c?.nm||id}`);
+ renderPOCs();renderOv();toast('Contact removed','info');
+}
+function togWA(id,val){
+ const c=p().pocs.find(x=>x.id===id);
+ if(c){c.wa=val;toast(`WhatsApp ${val?'enabled':'disabled'} for ${c.nm}`,'info');}
+}
+function openPOCDetail(id){
+ const d=p(); const c=d.pocs.find(x=>x.id===id);if(!c)return;
+ const idx=d.pocs.indexOf(c);
+ const myProjs=d.projs.filter(j=>(j.pocIds||[]).includes(c.id));
+ document.getElementById('pdTitle').textContent=c.nm;
+ document.getElementById('pdSub').textContent=c.tt+(c.dp?' · '+c.dp:'');
+ const b2cHtml=c.b2c.length?`<table class="mtbl"><thead><tr><th>Order ID</th><th>Order</th><th>Date</th><th>Amount (AED)</th><th>Status</th></tr></thead><tbody>${c.b2c.map(o=>`<tr><td style="font-family:monospace;font-size:12px;font-weight:600;color:var(--t2)">${o.oid||'—'}</td><td style="font-weight:500">${o.nm}</td><td style="color:var(--t3)">${o.dt}</td><td>AED ${o.amt.toLocaleString()}</td><td><span class="${dsB(o.st)}">${o.st}</span></td></tr>`).join('')}
+ </tbody></table>`:'<div class="empty" style="padding:16px"><p>No personal B2C orders on record.</p></div>';
+ const projHtml=myProjs.length?`<table class="mtbl"><thead><tr><th>Project</th><th>Reference</th><th>Status</th><th>Payment</th></tr></thead><tbody>${myProjs.map(j=>`<tr><td style="font-weight:500">${j.nm}</td><td style="font-size:11px;color:var(--t3);font-family:monospace">${j.rf||'—'}</td><td><span class="${stB(j.st)}">${j.st}</span></td><td><span class="${pyB(j.ps)}">${j.ps}</span></td></tr>`).join('')}
+ </tbody></table>`:'<div class="empty" style="padding:16px"><p>Not assigned to any projects.</p></div>';
+ document.getElementById('pocDetailBody').innerHTML=`
+ <div class="poc-hero"><div class="poc-hero-av" style="${av(idx)}">${ini(c.nm)}</div><div><div style="font-size:16px;font-weight:600">${c.nm}</div><div style="font-size:12px;color:var(--t3);margin-top:2px">${c.tt}</div><div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">${c.dp?`<span class="badge bb">${c.dp}</span>`:''}
+ <span class="badge ${c.wa?'bg':'bgr'}">${c.wa?' WhatsApp':'No WhatsApp'}</span><span class="badge bgr">${c.em}</span><span class="badge bgr">${c.ph}</span></div></div></div><div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px"> Personal B2C Orders</div>${b2cHtml}
+ <div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin:16px 0 10px"> Assigned Projects</div>${projHtml}`;
+ openM('pocDetailM');
+}
+
+// 
+// PROJECTS
+// 
+function renderProjs(){
+ const body=document.getElementById('pjBody');
+ const d=p();
+ if(!d.projs.length){body.innerHTML='<tr><td colspan="8"><div class="empty"><p>No projects yet.</p></div></td></tr>';return;}
+ body.innerHTML=d.projs.map(j=>{
+ const del=j.orders.filter(o=>o.ds==='Delivered').length;
+ return`<tr class="pr" id="pr-${j.id}" onclick="openProjDetail(${j.id})"><td><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="opacity:.4"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/></svg></td><td><div class="pnm">${j.nm}</div><div class="prf">${j.rf||'—'} · ${del}/${j.orders.length} orders delivered</div></td><td><span class="${stB(j.st)}">${j.st}</span></td><td style="font-weight:600">AED ${j.bg.toLocaleString()}</td><td style="font-size:12px;color:var(--t2)">${fd(j.sd)}<br><span style="color:var(--t3)">${fd(j.ed)}</span></td><td style="font-size:12px;font-family:monospace">${j.po||'<span style="color:var(--t3)">—</span>'}</td><td><span class="${pyB(j.ps)}">${j.ps}</span></td><td onclick="event.stopPropagation()"><div style="display:flex;gap:5px"><button class="btn btn-o btn-sm" onclick="openProjDetail(${j.id})">Open</button><button class="btn btn-d btn-sm" onclick="delProj(${j.id})">Del</button></div></td></tr>`;
+ }).join('');
+}
+function openAddProject(){
+ document.getElementById('pj-edit-id').value='';
+ document.getElementById('projMTitle').textContent='Add Project';
+ document.getElementById('projMSaveBtn').textContent='Add Project';
+ ['pj-nm','pj-rf','pj-bg','pj-sd','pj-ed','pj-po','pj-dl'].forEach(id=>setVal(id,''));
+ setVal('pj-st','Active');setVal('pj-ps','Pending');setVal('pj-pt','');
+ // Populate POC and sub options
+ document.getElementById('pj-poc').innerHTML='<option value="">— None —</option>'+p().pocs.map(c=>`<option value="${c.id}">${c.nm} — ${c.tt}</option>`).join('');
+ document.getElementById('pj-sub').innerHTML='<option value="">— None —</option>'+p().subs.map(s=>`<option value="${s.id}">${s.nm} (${s.tp})</option>`).join('');
+ openM('projM');
+}
+function openEditProject(id){
+ const j=p().projs.find(x=>x.id===id);if(!j)return;
+ document.getElementById('pj-edit-id').value=id;
+ document.getElementById('projMTitle').textContent='Edit Project';
+ document.getElementById('projMSaveBtn').textContent='Save Changes';
+ setVal('pj-nm',j.nm);setVal('pj-rf',j.rf);setSel('pj-st',j.st);
+ setVal('pj-bg',j.bg);setVal('pj-sd',j.sd);setVal('pj-ed',j.ed);
+ setVal('pj-po',j.po);setSel('pj-pt',j.pt);setSel('pj-ps',j.ps);setVal('pj-dl',j.dl);
+ document.getElementById('pj-poc').innerHTML='<option value="">— None —</option>'+p().pocs.map(c=>`<option value="${c.id}"${(j.pocIds||[]).includes(c.id)?' selected':''}>${c.nm} — ${c.tt}</option>`).join('');
+ document.getElementById('pj-sub').innerHTML='<option value="">— None —</option>'+p().subs.map(s=>`<option value="${s.id}"${j.subId===s.id?' selected':''}>${s.nm} (${s.tp})</option>`).join('');
+ openM('projM');
+}
+function saveProject(){
+ const nm=getVal('pj-nm'),bg=getVal('pj-bg'),sd=getVal('pj-sd'),ed=getVal('pj-ed');
+ let ok=true;
+ if(!nm){showE('e-pjnm');ok=false;}else hideE('e-pjnm');
+ if(!bg||Number(bg)<0){showE('e-pjbg');ok=false;}else hideE('e-pjbg');
+ if(!sd){showE('e-pjsd');ok=false;}else hideE('e-pjsd');
+ if(!ed||ed<=sd){showE('e-pjed');ok=false;}else hideE('e-pjed');
+ if(!ok)return;
+ const pocSel=document.getElementById('pj-poc');
+ const pocIds=Array.from(pocSel.selectedOptions).map(o=>Number(o.value)).filter(Boolean);
+ const subVal=getVal('pj-sub');
+ const data={nm,rf:getVal('pj-rf'),st:getVal('pj-st'),bg:Number(bg),sd,ed,po:getVal('pj-po'),pt:getVal('pj-pt'),ps:getVal('pj-ps'),dl:getVal('pj-dl'),pocIds,subId:subVal?Number(subVal):null};
+ const editId=document.getElementById('pj-edit-id').value;
+ if(editId){
+ const j=p().projs.find(x=>x.id==editId);
+ if(j){Object.assign(j,data);addLog('Task Completed',`Project updated: ${nm}`);}
+ } else {
+ p().projs.push({id:nid(),...data,orders:[]});
+ addLog('Projects','New project added: '+nm);
+ }
+ renderProjs();renderOv();closeM('projM');
+ toast(editId?'Project updated':'Project added','success');
+}
+function delProj(id){
+ if(!confirm('Delete this project?'))return;
+ const j=p().projs.find(x=>x.id===id);
+ p().projs=p().projs.filter(x=>x.id!==id);
+ addLog('Other',`Project deleted: ${j?.nm||id}`);
+ renderProjs();renderOv();toast('Project deleted','info');
+}
+function openProjDetail(id){
+ const j=p().projs.find(x=>x.id===id);if(!j)return;
+ const d=p();
+ const sub=d.subs.find(s=>s.id===j.subId);
+ const subPOC=sub?d.pocs.find(c=>c.id===sub.pocId):null;
+ const subIdx=sub?d.subs.indexOf(sub):0;
+ const assignedPOCs=d.pocs.filter(c=>(j.pocIds||[]).includes(c.id));
+ document.getElementById('prjDTitle').textContent=j.nm;
+ document.getElementById('prjDSub').textContent=(j.rf||'—')+(j.po?' · '+j.po:'');
+ const del=j.orders.filter(o=>o.ds==='Delivered').length;
+ const ordRows=j.orders.length?j.orders.map(o=>`<tr><td style="font-family:monospace;font-size:12px;font-weight:600;color:var(--t2)">${o.oid||'—'}</td><td style="font-weight:500">${o.nm}</td><td style="text-align:center;color:var(--t3)">${o.qty}</td><td>AED ${o.amt.toLocaleString()}</td><td>${fd(o.due)}</td><td><label class="del-tog"><input type="checkbox" ${o.ds==='Delivered'?'checked':''} onchange="togOS(${j.id},${o.id},this)"><span class="pill">${o.ds}</span></label></td><td onclick="event.stopPropagation()"><button class="btn btn-d btn-sm" onclick="delOrder(${j.id},${o.id})"></button></td></tr>`).join(''):'<tr><td colspan="7" style="text-align:center;color:var(--t3);padding:20px">No orders yet.</td></tr>';
+ document.getElementById('projDetailBody').innerHTML=`
+ <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px"><div style="padding:12px;background:var(--bg);border-radius:var(--r);border:1px solid var(--border)"><div style="font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Status</div><span class="${stB(j.st)}">${j.st}</span><br><select class="fs" style="margin-top:8px;font-size:12px" onchange="updateProjStatus(${j.id},this.value)"><option ${j.st==='Active'?'selected':''}>Active</option><option ${j.st==='On Hold'?'selected':''}>On Hold</option><option ${j.st==='Completed'?'selected':''}>Completed</option><option ${j.st==='Cancelled'?'selected':''}>Cancelled</option></select></div><div style="padding:12px;background:var(--bg);border-radius:var(--r);border:1px solid var(--border)"><div style="font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Budget</div><div style="font-size:16px;font-weight:700">AED ${j.bg.toLocaleString()}</div></div><div style="padding:12px;background:var(--bg);border-radius:var(--r);border:1px solid var(--border)"><div style="font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Payment</div><span class="${pyB(j.ps)}">${j.ps}</span><br><select class="fs" style="margin-top:8px;font-size:12px" onchange="updatePayStatus(${j.id},this.value)"><option ${j.ps==='Pending'?'selected':''}>Pending</option><option ${j.ps==='Invoiced'?'selected':''}>Invoiced</option><option ${j.ps==='Paid'?'selected':''}>Paid</option><option ${j.ps==='Overdue'?'selected':''}>Overdue</option></select></div><div style="padding:12px;background:var(--bg);border-radius:var(--r);border:1px solid var(--border)"><div style="font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Delivered</div><div style="font-size:22px;font-weight:700;font-family:'DM Serif Display',serif" id="pd-del-cnt-${j.id}">${del}/${j.orders.length}</div></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">${sub?`<div style="padding:12px 14px;background:var(--bg);border-radius:var(--r);border:1px solid var(--border)"><div style="font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px"> Sub Division</div><div style="font-size:13px;font-weight:600">${sub.nm}</div><div style="font-size:11px;color:var(--t3)">${sub.tp}${sub.ct?' · '+sub.ct:''}</div>${subPOC?`<div style="margin-top:8px;display:flex;align-items:center;gap:7px;padding:6px 9px;background:var(--white);border:1px solid var(--border);border-radius:6px"><div style="width:24px;height:24px;border-radius:4px;${av(d.pocs.indexOf(subPOC))};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0">${ini(subPOC.nm)}</div><div><div style="font-size:11px;font-weight:600">${subPOC.nm}</div><div style="font-size:10px;color:var(--t3)">Division POC${subPOC.wa?' · ':''}</div></div></div>`:''}
+ </div>`:'<div style="padding:12px;background:var(--bg);border-radius:var(--r);border:1px solid var(--border);color:var(--t3);font-size:13px">No sub division linked</div>'}
+ <div style="padding:12px 14px;background:var(--bg);border-radius:var(--r);border:1px solid var(--border)"><div style="font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px"> Project POCs (${assignedPOCs.length})</div>${assignedPOCs.length?assignedPOCs.map((c,i)=>`<div style="display:flex;align-items:center;gap:7px;margin-bottom:6px"><div style="width:24px;height:24px;border-radius:4px;${av(d.pocs.indexOf(c))};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0">${ini(c.nm)}</div><div style="font-size:12px;font-weight:600">${c.nm}</div>${c.wa?'<span style="font-size:12px"></span>':''}</div>`).join(''):'<div style="font-size:12px;color:var(--t3)">No POCs assigned</div>'}
+ </div></div>${j.dl?`<div style="padding:12px 14px;background:var(--bg);border-radius:var(--r);border:1px solid var(--border);margin-bottom:16px"><div style="font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Deliverables</div><div style="font-size:13px;color:var(--t2);line-height:1.6">${j.dl}</div></div>`:''}
+ <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1px"> Orders & Delivery Status</div><div style="display:flex;gap:8px"><button class="btn btn-o btn-sm" onclick="openEditProject(${j.id});closeM('projDetailM')"> Edit Project</button><button class="btn btn-p btn-sm" onclick="openAddOrderModal(${j.id})">+ Add Order</button></div></div><table class="mtbl" id="ord-tbl-${j.id}"><thead><tr><th>Order ID</th><th>Order / Deliverable</th><th style="text-align:center">Qty</th><th>Amount (AED)</th><th>Due Date</th><th>Status</th><th style="width:50px"></th></tr></thead><tbody id="ord-body-${j.id}">${ordRows}</tbody></table>`;
+ document.getElementById('projDetailFoot').innerHTML=`
+ <button class="btn btn-g btn-sm" onclick="markPaid(${j.id})">Mark as Paid</button><button class="btn btn-o" onclick="closeM('projDetailM')">Close</button>`;
+ openM('projDetailM');
+}
+function updateProjStatus(id,val){
+ const j=p().projs.find(x=>x.id===id);
+ if(j){j.st=val;renderProjs();renderOv();addLog('Task Completed',`Project "${j.nm}" status changed to ${val}`);toast(`Project status: ${val}`,'success');}
+}
+function updatePayStatus(id,val){
+ const j=p().projs.find(x=>x.id===id);
+ if(j){j.ps=val;renderProjs();renderOv();addLog('Payment Received',`Project "${j.nm}" payment status: ${val}`);toast(`Payment status: ${val}`,'success');}
+}
+function markPaid(id){updatePayStatus(id,'Paid');}
+function togOS(projId,ordId,el){
+ const j=p().projs.find(x=>x.id===projId);
+ const o=j&&j.orders.find(x=>x.id===ordId);
+ if(!o)return;
+ o.ds=el.checked?'Delivered':'Pending';
+ el.nextElementSibling.textContent=o.ds;
+ const del=j.orders.filter(x=>x.ds==='Delivered').length;
+ const cnt=document.getElementById(`pd-del-cnt-${projId}`);
+ if(cnt)cnt.textContent=`${del}/${j.orders.length}`;
+ const prf=document.querySelector(`#pr-${projId} .prf`);
+ if(prf)prf.textContent=`${j.rf||'—'} · ${del}/${j.orders.length} orders delivered`;
+ toast(`Marked as ${o.ds}`,'success');
+}
+function openAddOrderModal(projId){
+ document.getElementById('ao-proj-id').value=projId;
+ const j=p().projs.find(x=>x.id===projId);
+ document.getElementById('addOrderProjNm').textContent=j?.nm||'';
+ ['ao-nm','ao-due'].forEach(id=>setVal(id,''));
+ setVal('ao-qty','1');setVal('ao-amt','0');setSel('ao-ds','Pending');
+ openM('addOrderM');
+}
+function saveOrder(){
+ const nm=getVal('ao-nm'),qty=Number(getVal('ao-qty')),amt=Number(getVal('ao-amt'));
+ let ok=true;
+ if(!nm){showE('e-aonm');ok=false;}else hideE('e-aonm');
+ if(qty<1){showE('e-aoqty');ok=false;}else hideE('e-aoqty');
+ if(amt<0){showE('e-aoamt');ok=false;}else hideE('e-aoamt');
+ if(!ok)return;
+ const projId=Number(document.getElementById('ao-proj-id').value);
+ const j=p().projs.find(x=>x.id===projId);if(!j)return;
+ const oid=genOID();
+ j.orders.push({id:nid(),oid,nm,qty,amt,ds:getVal('ao-ds'),due:getVal('ao-due')});
+ // Append row to open table if visible
+ const tbody=document.getElementById(`ord-body-${projId}`);
+ if(tbody){
+ const newId=j.orders[j.orders.length-1].id;
+ const tr=document.createElement('tr');
+ tr.innerHTML=`<td style="font-family:monospace;font-size:12px;font-weight:600;color:var(--t2)">${oid}</td><td style="font-weight:500">${nm}</td><td style="text-align:center;color:var(--t3)">${qty}</td><td>AED ${amt.toLocaleString()}</td><td>${fd(getVal('ao-due'))}</td><td><label class="del-tog"><input type="checkbox" onchange="togOS(${projId},${newId},this)"><span class="pill">Pending</span></label></td><td><button class="btn btn-d btn-sm" onclick="delOrder(${projId},${newId})"></button></td>`;
+ tbody.appendChild(tr);
+ // update counter
+ const del=j.orders.filter(x=>x.ds==='Delivered').length;
+ const cnt=document.getElementById(`pd-del-cnt-${projId}`);
+ if(cnt)cnt.textContent=`${del}/${j.orders.length}`;
+ }
+ renderProjs();renderOv();closeM('addOrderM');
+ addLog('Orders',`Order ${oid} added to "${j.nm}"`);
+ toast(`Order ${oid} added`,'success');
+}
+function delOrder(projId,ordId){
+ if(!confirm('Delete this order?'))return;
+ const j=p().projs.find(x=>x.id===projId);if(!j)return;
+ const o=j.orders.find(x=>x.id===ordId);
+ j.orders=j.orders.filter(x=>x.id!==ordId);
+ // Remove row from table
+ const tbody=document.getElementById(`ord-body-${projId}`);
+ if(tbody){const rows=tbody.querySelectorAll('tr');rows.forEach(r=>{if(r.textContent.includes(o?.oid||''))r.remove()});}
+ renderProjs();renderOv();
+ addLog('Other',`Order ${o?.oid||ordId} removed from "${j.nm}"`);
+ toast('Order deleted','info');
+}
+
+// 
+// SUB DIVISIONS
+// 
+function renderSDs(){
+ const d=p();
+ const grid=document.getElementById('sdGrid');
+ let html=d.subs.map((s,i)=>{
+ const poc=d.pocs.find(c=>c.id===s.pocId);
+ const linkedProjs=d.projs.filter(j=>j.subId===s.id);
+ const col=PAV[i%PAV.length];
+ return`<div class="sd-card" onclick="openEditSD(${s.id})"><div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px"><div class="sd-logo" style="background:${col.bg};color:${col.c};flex-shrink:0">${ini(s.nm)}</div><div><div style="font-size:14px;font-weight:600">${s.nm}</div><div style="font-size:11px;color:var(--t3)">${s.tp}${s.ct?' · '+s.ct:''}</div></div></div>${poc?`<div style="display:flex;align-items:center;gap:7px;padding:7px 10px;background:var(--bg);border-radius:6px;border:1px solid var(--border);margin-bottom:8px"><div style="width:26px;height:26px;border-radius:5px;${av(d.pocs.indexOf(poc))};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0">${ini(poc.nm)}</div><div><div style="font-size:12px;font-weight:600">${poc.nm}</div><div style="font-size:10px;color:var(--t3)">POC${poc.wa?' · ':''}</div></div></div>`:''}
+ <div style="font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Linked Projects (${linkedProjs.length})</div>${linkedProjs.length?linkedProjs.map(j=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-top:1px solid var(--border)"><div style="font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px">${j.nm}</div><span class="${stB(j.st)}" style="font-size:10px">${j.st}</span></div>`).join(''):'<div style="font-size:12px;color:var(--t3)">No linked projects</div>'}
+ </div>`;
+ }).join('');
+ html+=`<div class="add-sd-card" onclick="openM('sdM');document.getElementById('sdMTitle').textContent='Add Sub Division';document.getElementById('sdSaveBtn').textContent='Add Sub Division';document.getElementById('sdDelBtn').style.display='none';document.getElementById('sd-edit-id').value='';clearSDForm();populateSDPOC()"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Sub Division
+ </div>`;
+ grid.innerHTML=html;
+}
+function populateSDPOC(){
+ document.getElementById('sd-poc').innerHTML='<option value="">— Select a POC —</option>'+p().pocs.map(c=>`<option value="${c.id}">${c.nm} — ${c.tt}</option>`).join('');
+ document.getElementById('sdMParent').textContent=p().nm;
+}
+function clearSDForm(){
+ ['sd-nm','sd-hd','sd-ph','sd-em','sd-web','sd-addr','sd-trn','sd-nt'].forEach(id=>setVal(id,''));
+ setSel('sd-tp','Business Unit');setSel('sd-ind','');setSel('sd-st','Active');setVal('sd-dt','');
+}
+function openEditSD(id){
+ const s=p().subs.find(x=>x.id===id);if(!s)return;
+ document.getElementById('sd-edit-id').value=id;
+ document.getElementById('sdMTitle').textContent='Edit: '+s.nm;
+ document.getElementById('sdSaveBtn').textContent='Save Changes';
+ document.getElementById('sdDelBtn').style.display='inline-flex';
+ populateSDPOC();
+ setVal('sd-nm',s.nm);setSel('sd-tp',s.tp);setSel('sd-ind',s.ind||'');setSel('sd-st',s.st);
+ setVal('sd-hd',s.hd);setSel('sd-mgr',s.mgr);setVal('sd-ph',s.ph);setVal('sd-em',s.em);
+ setVal('sd-web',s.web);setSel('sd-ct',s.ct);setVal('sd-addr',s.addr);setVal('sd-trn',s.trn);
+ setVal('sd-dt',s.dt);setVal('sd-nt',s.nt);setSel('sd-poc',s.pocId?.toString()||'');
+ openM('sdM');
+}
+function saveSD(){
+ const nm=getVal('sd-nm'),ph=getVal('sd-ph'),em=getVal('sd-em'),pocId=getVal('sd-poc');
+ let ok=true;
+ if(!nm){showE('e-sdnm');ok=false;}else hideE('e-sdnm');
+ if(ph&&!vPhone(ph)){showE('e-sdph');ok=false;}else hideE('e-sdph');
+ if(!vEmail(em)){showE('e-sdem');ok=false;}else hideE('e-sdem');
+ if(!pocId){showE('e-sdpoc');ok=false;}else hideE('e-sdpoc');
+ if(!ok)return;
+ const trn=getVal('sd-trn').replace(/\D/g,'');
+ if(trn&&trn.length!==15){toast('Division TRN must be 15 digits','error');return;}
+ const data={nm,tp:getVal('sd-tp'),ind:getVal('sd-ind'),st:getVal('sd-st'),hd:getVal('sd-hd'),mgr:getVal('sd-mgr'),ph,em,web:getVal('sd-web'),ct:getVal('sd-ct'),addr:getVal('sd-addr'),trn:getVal('sd-trn'),dt:getVal('sd-dt'),nt:getVal('sd-nt'),pocId:Number(pocId)};
+ const editId=document.getElementById('sd-edit-id').value;
+ if(editId){
+ const s=p().subs.find(x=>x.id==editId);
+ if(s){Object.assign(s,data);addLog('Task Completed',`Sub division updated: ${nm}`);}
+ } else {
+ p().subs.push({id:nid(),...data,tlFile:'',vatFile:''});
+ addLog('Sub Division','New sub division added: '+nm);
+ }
+ renderSDs();closeM('sdM');
+ toast(editId?'Sub division updated':'Sub division added','success');
+}
+function deleteSD(){
+ const editId=document.getElementById('sd-edit-id').value;if(!editId)return;
+ const s=p().subs.find(x=>x.id==editId);
+ if(!confirm(`Delete "${s?.nm}"?`))return;
+ // unlink projects
+ p().projs.forEach(j=>{if(j.subId==editId)j.subId=null;});
+ p().subs=p().subs.filter(x=>x.id!=editId);
+ addLog('Other',`Sub division deleted: ${s?.nm}`);
+ renderSDs();renderProjs();closeM('sdM');toast('Sub division deleted','info');
+}
+
+// 
+// PARTNERS (add/edit)
+// 
+let nptlUp=false,npvatUp=false;
+function openEditPartner(){
+ const d=p(); const pr=d.profile||{};
+ document.getElementById('np-edit-id').value=d.id;
+ document.getElementById('addPartnerTitle').textContent='Edit Partner: '+d.nm;
+ document.getElementById('addPartnerSaveBtn').textContent='Save Changes';
+ // Hide doc section for edit
+ document.getElementById('np-docs-section').style.display='none';
+ document.getElementById('np-docs-lbl').style.display='none';
+ document.getElementById('np-docs-grid').style.display='none';
+ setVal('np-nm',d.nm);setSel('np-ind',d.ind);setSel('np-st',pr.status);
+ setSel('np-country',pr.country);setVal('np-ph',pr.ph);setVal('np-em','');
+ setVal('np-web',pr.web);setSel('np-mgr',pr.mgr);setVal('np-addr',pr.addr);
+ setVal('np-trn',pr.trn);setSel('np-type',pr.type||'Corporate');
+ openM('addPartnerM');
+}
+function savePartner(){
+ const nm=getVal('np-nm');
+ if(!nm){showE('e-npnm');return;}hideE('e-npnm');
+ const ph=getVal('np-ph');
+ if(ph&&!vPhone(ph)){showE('e-npph');return;}hideE('e-npph');
+ const editId=document.getElementById('np-edit-id').value;
+ const trn=getVal('np-trn').replace(/\D/g,'');
+ if(trn&&trn.length!==15){toast('TRN must be 15 digits','error');return;}
+ if(!editId){
+ // New partner — check docs
+ if(!nptlUp){showE('e-nptl');document.getElementById('nptlZ').style.borderColor='var(--red)';return;}
+ if(!npvatUp){showE('e-npvat');document.getElementById('npvatZ').style.borderColor='var(--red)';return;}
+ const ini2=nm.split(' ').filter(Boolean).map(n=>n[0]).join('').slice(0,2).toUpperCase();
+ const newP={
+ id:nid(), nm, ind:getVal('np-ind'), li:ini2, lc:'#6d28d9', lb:'bgr', lbt:getVal('np-ind'),
+ profile:{status:getVal('np-st'),country:getVal('np-country'),ph,web:getVal('np-web'),addr:getVal('np-addr'),trn:getVal('np-trn'),mgr:getVal('np-mgr'),onb:new Date().toISOString().slice(0,10),type:getVal('np-type')},
+ billing:{method:'PO After Invoice',terms:'45 Days',currency:'AED',cname:'',cemail:'',cphone:'',caddr:'',trn:'',vat:'Yes — 5% VAT applies',instructions:''},
+ notes:'',pocs:[],projs:[],subs:[],acts:[{tp:'Task Completed',tx:`Partner created: ${nm}`,tm:nowStr()}]
+ };
+ PD.push(newP);
+ ci=PD.length-1;
+ renderSidebar();renderHeader();renderOv();
+ nptlUp=false;npvatUp=false;
+ document.getElementById('nptlFl').innerHTML='';document.getElementById('npvatFl').innerHTML='';
+ document.getElementById('nptlZ').style.borderColor='';document.getElementById('npvatZ').style.borderColor='';
+ closeM('addPartnerM');
+ toast(`${nm} added as new partner`,'success');
+ } else {
+ const d=PD.find(x=>x.id==editId);
+ if(d){
+ d.nm=nm; d.ind=getVal('np-ind'); d.lbt=d.ind;
+ if(!d.profile)d.profile={};
+ Object.assign(d.profile,{status:getVal('np-st'),country:getVal('np-country'),ph,web:getVal('np-web'),addr:getVal('np-addr'),trn:getVal('np-trn'),mgr:getVal('np-mgr'),type:getVal('np-type')});
+ addLog('Task Completed',`Partner details updated: ${nm}`);
+ renderSidebar();renderHeader();renderProfile();
+ }
+ closeM('addPartnerM');toast('Partner updated','success');
+ }
+ // Restore docs section for next time
+ document.getElementById('np-docs-section').style.display='';
+ document.getElementById('np-docs-lbl').style.display='';
+ document.getElementById('np-docs-grid').style.display='';
+}
+
+// 
+// NOTES & ACTIVITY
+// 
+function saveNote(){
+ p().notes=document.getElementById('notesArea').value;
+ addLog('Notes Updated','Internal notes saved');
+ toast('Notes saved','success');
+}
+function renderActs(){
+ const list=document.getElementById('actList');
+ if(!p().acts.length){list.innerHTML='<div class="empty"><p>No activity yet.</p></div>';return;}
+ list.innerHTML=p().acts.map(a=>`<div class="act-item"><div class="act-ic">${a.tp.split(' ')[0]}</div><div><div class="act-type">${a.tp.replace(/^\S+\s/,'')}</div><div class="act-txt">${a.tx}</div><div class="act-tm">${a.tm}</div></div></div>`).join('');
+}
+function saveLog(){
+ const tx=getVal('l-tx');if(!tx){showE('e-ltx');return;}hideE('e-ltx');
+ addLog(getVal('l-tp'),tx);
+ renderActs();closeM('logM');setVal('l-tx','');
+ toast('Activity logged','success');
+}
+
+// 
+// SAVE ALL (profiles + billing)
+// 
+function saveAll(){
+ const activeTab=document.querySelector('.tb.active')?.textContent.trim();
+ if(activeTab==='Company Profile'){saveProfile();return;}
+ if(activeTab==='Notes & Activity'){saveNote();return;}
+ saveProfile();
+ toast('All changes saved','success');
+}
+
+// 
+// ADMIN
+// 
+function renderAdmin(){
+ const total=FR.length;
+ const editable=Object.values(FP).filter(Boolean).length;
+ const locked=total-editable;
+ const req=FR.filter(f=>f.req).length;
+ document.getElementById('asTotal').textContent=total;
+ document.getElementById('asEdit').textContent=editable;
+ document.getElementById('asLock').textContent=locked;
+ document.getElementById('asReq').textContent=req;
+ const tabs=[...new Set(FR.map(f=>f.tab))];
+ const tabIcons={'Company Profile':'','Contacts':'','Projects':'','Sub Divisions':''};
+ document.getElementById('adminFieldsWrap').innerHTML=tabs.map(tab=>{
+ const fields=FR.filter(f=>f.tab===tab);
+ const editCnt=fields.filter(f=>FP[f.id]).length;
+ return`<div class="ftbl-wrap"><div class="ftbl-hd"><span>${tabIcons[tab]||''} ${tab}</span><span style="margin-left:auto;font-size:11px;color:var(--t2);font-weight:400;text-transform:none;letter-spacing:0">${editCnt}/${fields.length} editable</span><button class="btn btn-o btn-sm" style="padding:3px 9px;font-size:11px;margin-left:8px" onclick="toggleTabAll('${tab}',true)">Unlock All</button><button class="btn btn-d btn-sm" style="padding:3px 9px;font-size:11px;margin-left:4px" onclick="toggleTabAll('${tab}',false)">Lock All</button></div><div class="ftbl-cols"><div>#</div><div>Field Name</div><div>Section</div><div>Type</div><div>Status</div><div>AM Editable</div></div>${fields.map((f,i)=>`<div class="frow"><div class="fr-num">${i+1}</div><div class="fr-lbl">${f.lbl}${f.req?'<span class="fr-req">Required</span>':''}${f.virt?'<span class="fr-virtual">(modal)</span>':''}</div><div class="fr-sect">${f.sec}</div><div class="fr-type"><span>${f.type}</span></div><div><span class="badge ${FP[f.id]?'bg':'br'}" id="fst-${f.id}">${FP[f.id]?'Editable':'Locked'}</span></div><div style="display:flex;align-items:center"><label class="ftg"><input type="checkbox" ${FP[f.id]?'checked':''} onchange="toggleField('${f.id}',this.checked)"><span class="ftg-sl"></span></label><span class="ftg-lbl" id="ftl-${f.id}" style="color:${FP[f.id]?'var(--green)':'var(--red)'}">${FP[f.id]?'Edit':'Lock'}</span></div></div>`).join('')}
+ </div>`;
+ }).join('');
+}
+function toggleField(fid,val){
+ FP[fid]=val;
+ const lbl=document.getElementById('ftl-'+fid);
+ if(lbl){lbl.textContent=val?'Edit':'Lock';lbl.style.color=val?'var(--green)':'var(--red)';}
+ const st=document.getElementById('fst-'+fid);
+ if(st){st.className=`badge ${val?'bg':'br'}`;st.textContent=val?'Editable':'Locked';}
+ const e=Object.values(FP).filter(Boolean).length;
+ document.getElementById('asEdit').textContent=e;
+ document.getElementById('asLock').textContent=FR.length-e;
+}
+function toggleTabAll(tab,val){
+ FR.filter(f=>f.tab===tab).forEach(f=>{
+ FP[f.id]=val;
+ const lbl=document.getElementById('ftl-'+f.id);
+ if(lbl){lbl.textContent=val?'Edit':'Lock';lbl.style.color=val?'var(--green)':'var(--red)';}
+ const st=document.getElementById('fst-'+f.id);
+ if(st){st.className=`badge ${val?'bg':'br'}`;st.textContent=val?'Editable':'Locked';}
+ const cb=document.querySelector(`[onchange*="toggleField('${f.id}'"]`);
+ if(cb)cb.checked=val;
+ });
+ const e=Object.values(FP).filter(Boolean).length;
+ document.getElementById('asEdit').textContent=e;
+ document.getElementById('asLock').textContent=FR.length-e;
+ toast(`All ${tab} fields ${val?'unlocked':'locked'}`,'success');
+}
+function savePermissions(){applyPerms();goBackCRM();toast('Permissions saved & applied','success');}
+
+// 
+// TABS
+// 
+function swTab(tab,btn){
+ document.querySelectorAll('.tp').forEach(x=>x.classList.remove('active'));
+ document.querySelectorAll('.tb').forEach(x=>x.classList.remove('active'));
+ document.getElementById('tab-'+tab).classList.add('active');
+ btn.classList.add('active');
+ if(tab==='pocs')renderPOCs();
+ if(tab==='projects')renderProjs();
+ if(tab==='notes'){renderActs();document.getElementById('notesArea').value=p().notes||'';}
+ if(tab==='ov')renderOv();
+ if(tab==='profile'){renderProfile();renderSDs();}
+ applyPerms();
+}
+function swInner(tab,btn){
+ document.querySelectorAll('.itp').forEach(x=>x.classList.remove('active'));
+ document.querySelectorAll('.it').forEach(x=>x.classList.remove('active'));
+ document.getElementById('inner-'+tab).classList.add('active');
+ btn.classList.add('active');
+ if(tab==='subdivisions')renderSDs();
+ if(tab==='company')renderProfile();
+}
+
+// 
+// MODALS
+// 
+function openM(id){document.getElementById(id).classList.add('open');}
+function closeM(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.ov').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));
+
+// 
+// UPLOADS
+// 
+function upLogo(input){
+ if(!input.files[0])return;
+ const reader=new FileReader();
+ reader.onload=e=>{
+ const lb=document.getElementById('phLB');
+ lb.innerHTML=`<img src="${e.target.result}" alt="logo"><input type="file" id="lgF" accept="image/*" onchange="upLogo(this)" style="display:none">`;
+ toast('Logo updated','success');
+ };reader.readAsDataURL(input.files[0]);
+}
+function upFile(input,tid){
+ const cont=document.getElementById(tid);if(!cont)return;
+ Array.from(input.files).forEach(f=>{
+ if(f.size>10*1024*1024){toast(`${f.name} exceeds 10MB`,'error');return;}
+ const ext=f.name.split('.').pop().toUpperCase();
+ const icons={PDF:'',PNG:'',JPG:'',JPEG:'',DOC:'',DOCX:''};
+ const el=document.createElement('div');el.className='fitem';
+ el.innerHTML=`<span>${icons[ext]||''}</span><span class="fn">${f.name}</span><span class="fsz">${(f.size/1024).toFixed(0)} KB</span><button class="frm" onclick="this.parentElement.remove()"></button>`;
+ cont.appendChild(el);
+ });toast('File(s) uploaded','success');
+}
+function dOv(e,id){e.preventDefault();document.getElementById(id).classList.add('dov');}
+function dLv(id){document.getElementById(id).classList.remove('dov');}
+function dDp(e,fid,tid){
+ e.preventDefault();e.currentTarget.classList.remove('dov');
+ const dt=new DataTransfer();Array.from(e.dataTransfer.files).forEach(f=>dt.items.add(f));
+ const inp=document.getElementById(fid);inp.files=dt.files;upFile(inp,tid);
+}
+
+// 
+// VALIDATION
+// 
+const vEmail=e=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+const vPhone=p=>/^[+\d][\d\s\-\(\)]{6,20}$/.test(p.trim());
+function vEm(inp,eid){(!inp.value||vEmail(inp.value))?(inp.classList.remove('err'),hideE(eid)):(inp.classList.add('err'),showE(eid));}
+function vPh(inp,eid){(!inp.value||vPhone(inp.value))?(inp.classList.remove('err'),hideE(eid)):(inp.classList.add('err'),showE(eid));}
+function vTRN(inp,eid){const v=inp.value.replace(/\D/g,'');v&&v.length!==15?(inp.classList.add('err'),showE(eid)):(inp.classList.remove('err'),hideE(eid));}
+function showE(id){const e=document.getElementById(id);if(e)e.classList.add('show');}
+function hideE(id){const e=document.getElementById(id);if(e)e.classList.remove('show');}
+
+// 
+// TOAST
+// 
+function toast(msg,type='info'){
+ const w=document.getElementById('TC');
+ const t=document.createElement('div');
+ t.className=`toast ${type}`;
+ const ic={success:'',error:'',info:'·'};
+ t.innerHTML=`<span style="font-weight:700;color:${type==='success'?'var(--green)':type==='error'?'var(--red)':'var(--text)'}">${ic[type]}</span><span>${msg}</span>`;
+ w.appendChild(t);
+ setTimeout(()=>{t.style.opacity='0';t.style.transform='translateY(6px)';t.style.transition='.25s';setTimeout(()=>t.remove(),300);},3000);
+}
+
+// Sidebar filter
+function filterP(q){document.querySelectorAll('.pi').forEach(el=>{el.style.display=el.querySelector('.pn').textContent.toLowerCase().includes(q.toLowerCase())?'':'none';});}
+</script>
+</body>
+</html>

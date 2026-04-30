@@ -414,6 +414,16 @@ button{cursor:pointer;font-family:inherit}input,textarea,select{font-family:inhe
 </div>
 <div class="m-foot"><button class="btn btn-o" onclick="closeM('userM')">Cancel</button><button class="btn btn-p" onclick="saveUser()" id="userMSaveBtn">Create Account</button></div>
 </div></div>
+<!-- CONFIRM MODAL -->
+<div class="ov" id="confirmM"><div class="modal" style="width:400px;text-align:center">
+ <div style="margin-bottom:8px"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="1.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+ <div style="font-size:16px;font-weight:600;margin-bottom:8px" id="confirmTitle">Are you sure?</div>
+ <div style="font-size:13px;color:var(--t2);margin-bottom:24px;line-height:1.6" id="confirmMsg">This action cannot be undone.</div>
+ <div style="display:flex;gap:10px;justify-content:center">
+  <button class="btn btn-o" onclick="closeM('confirmM')" style="min-width:100px">Cancel</button>
+  <button class="btn btn-d" id="confirmOkBtn" onclick="" style="min-width:100px">Confirm</button>
+ </div>
+</div></div>
 <div class="toasts-c" id="TC"></div><script>
 'use strict';
 // 
@@ -956,13 +966,7 @@ function savePOC(){
  renderPOCs();renderOv();closeM('pocM'); renderActs();
  toast(editId?'Contact updated':'Contact added','success');
 }
-function delPOC(id){
 
- const c=p().pocs.find(x=>x.id===id);
- p().pocs=p().pocs.filter(x=>x.id!==id);
- addLog('Other',`Contact removed: ${c?.nm||id}`);
- renderPOCs();renderOv();toast('Contact removed','info');
-}
 function togWA(id,val){
  const c=p().pocs.find(x=>x.id===id);
  if(c){c.wa=val;toast(`WhatsApp ${val?'enabled':'disabled'} for ${c.nm}`,'info');}
@@ -1054,13 +1058,6 @@ function saveProject(){
  }
  renderProjs();renderOv();closeM('projM'); renderActs();
  toast(editId?'Project updated':'Project added','success');
-}
-function delProj(id){
-
- const j=p().projs.find(x=>x.id===id);
- p().projs=p().projs.filter(x=>x.id!==id);
- addLog('Other',`Project deleted: ${j?.nm||id}`);
- renderProjs();renderOv();toast('Project deleted','info');
 }
 function openProjDetail(id){
  const j=p().projs.find(x=>x.id===id);if(!j)return;
@@ -1172,18 +1169,6 @@ function saveOrder(){
  addLog('Orders',`Order ${oid} added to "${j.nm}"`);
  toast(`Order ${oid} added`,'success');
 }
-function delOrder(projId,ordId){
-
- const j=p().projs.find(x=>x.id===projId);if(!j)return;
- const o=j.orders.find(x=>x.id===ordId);
- j.orders=j.orders.filter(x=>x.id!==ordId);
- // Remove row from table
- const tbody=document.getElementById(`ord-body-${projId}`);
- if(tbody){const rows=tbody.querySelectorAll('tr');rows.forEach(r=>{if(r.textContent.includes(o?.oid||''))r.remove()});}
- renderProjs();renderOv();
- addLog('Other',`Order ${o?.oid||ordId} removed from "${j.nm}"`);
- toast('Order deleted','info');
-}
 
 // 
 // SUB DIVISIONS
@@ -1260,16 +1245,7 @@ function saveSD(){
  renderSDs();closeM('sdM'); renderActs();
  toast(editId?'Sub division updated':'Sub division added','success');
 }
-function deleteSD(){
- const editId=document.getElementById('sd-edit-id').value;if(!editId)return;
- const s=p().subs.find(x=>x.id==editId);
 
- // unlink projects
- p().projs.forEach(j=>{if(j.subId==editId)j.subId=null;});
- p().subs=p().subs.filter(x=>x.id!=editId);
- addLog('Other',`Sub division deleted: ${s?.nm}`);
- renderSDs();renderProjs();closeM('sdM');toast('Sub division deleted','info');
-}
 
 // 
 // PARTNERS (add/edit)
@@ -1421,11 +1397,6 @@ function saveEditNote(id){
  toast('Note updated','success');
 }
 
-function deleteNote(id){
- p().noteItems=(p().noteItems||[]).filter(x=>x.id!==id);
- renderNotes();
- toast('Note deleted','info');
-}
 
 function saveNote(){
  // legacy — no-op now
@@ -1631,13 +1602,70 @@ function saveUser(){
  renderUsers();
  renderLoginScreen();
 }
+function showConfirm(title, msg, onOk, danger=true){
+ document.getElementById('confirmTitle').textContent=title;
+ document.getElementById('confirmMsg').textContent=msg;
+ const btn=document.getElementById('confirmOkBtn');
+ btn.textContent='Confirm';
+ btn.className='btn '+(danger?'btn-d':'btn-warn')+' ';
+ btn.style.minWidth='100px';
+ btn.onclick=()=>{closeM('confirmM');onOk();};
+ openM('confirmM');
+}
+
+function deleteNote(id){
+ showConfirm('Delete Note','This note will be permanently removed.',()=>{
+  p().noteItems=(p().noteItems||[]).filter(x=>x.id!==id);
+  renderNotes();
+  toast('Note deleted','info');
+ });
+}
+
+function delPOC(id){
+ const c=p().pocs.find(x=>x.id===id);
+ showConfirm('Remove Contact','Remove '+( c?.nm||'this contact')+'? This cannot be undone.',()=>{
+  p().pocs=p().pocs.filter(x=>x.id!==id);
+  addLog('Other',`Contact removed: ${c?.nm||id}`);
+  renderPOCs();renderOv();toast('Contact removed','info');
+ });
+}
+
+function delProj(id){
+ const j=p().projs.find(x=>x.id===id);
+ showConfirm('Delete Project','Delete "'+( j?.nm||'this project')+'"? All orders will also be removed.',()=>{
+  p().projs=p().projs.filter(x=>x.id!==id);
+  renderProjs();renderOv();toast('Project deleted','info');
+ });
+}
+
+function delOrder(projId,ordId){
+ showConfirm('Delete Order','Remove this order from the project?',()=>{
+  const j=p().projs.find(x=>x.id===projId);
+  if(j){j.orders=j.orders.filter(o=>o.id!==ordId);openProjDetail(projId);renderProjs();}
+  toast('Order removed','info');
+ });
+}
+
+function deleteSD(){
+ const editId=document.getElementById('sd-edit-id').value;
+ const s=p().subs.find(x=>x.id==editId);
+ showConfirm('Delete Sub Division','Delete "'+( s?.nm||'this division')+'"? Linked projects will be unlinked.',()=>{
+  p().projs.forEach(j=>{if(j.subId==editId)j.subId=null;});
+  p().subs=p().subs.filter(x=>x.id!=editId);
+  addLog('Other',`Sub division deleted: ${s?.nm}`);
+  renderSDs();renderProjs();closeM('sdM');toast('Sub division deleted','info');
+ });
+}
+
 function toggleUserDisabled(uid){
  if(CU&&CU.id===uid){toast('Cannot disable your own account','error');return;}
  const u=USERS_LIST.find(x=>x.id===uid);if(!u)return;
- u.disabled=!u.disabled;
- renderUsers();
- renderLoginScreen();
- toast(`${u.nm} has been ${u.disabled?'disabled':'re-enabled'}`,'success');
+ const action=u.disabled?'Re-enable':'Disable';
+ showConfirm(action+' Account',`${action} ${u.nm}? They will ${u.disabled?'regain':'lose'} access to the CRM.`,()=>{
+  u.disabled=!u.disabled;
+  renderUsers();renderLoginScreen();
+  toast(`${u.nm} has been ${u.disabled?'disabled':'re-enabled'}`,'success');
+ }, !u.disabled);
 }
 
 

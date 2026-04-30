@@ -431,9 +431,10 @@ button{cursor:pointer;font-family:inherit}input,textarea,select{font-family:inhe
 // USERS (dynamic — managed from admin panel)
 // 
 let USERS_LIST=[
- {id:'u1', nm:'Kartik Hushare', role:'admin',   av:'KH', bg:'var(--pd)', c:'var(--purple)', rl:'Administrator',   pin:'1234', email:'kartik@bloomingbox.ae', phone:'+971 50 100 0001', position:'CEO & Founder',      dept:'Management',    joinDate:'2022-01-01'},
- {id:'u2', nm:'Tanya BB',       role:'manager', av:'TB', bg:'#fff0f2',   c:'var(--du)',     rl:'Account Manager', pin:'5678', email:'tanya@bloomingbox.ae',   phone:'+971 50 200 0002', position:'Senior Account Manager', dept:'Sales',       joinDate:'2023-03-15'},
- {id:'u3', nm:'Maria Khan',     role:'manager', av:'MK', bg:'#eff6ff',   c:'var(--dp)',     rl:'Account Manager', pin:'9012', email:'maria@bloomingbox.ae',   phone:'+971 50 300 0003', position:'Account Manager',       dept:'Sales',       joinDate:'2023-09-01'},
+ {id:'u1', nm:'Kartik Hushare', role:'admin',   av:'KH', bg:'var(--pd)', c:'var(--purple)', rl:'Administrator',   pin:'kartik@123', email:'kartik@bloomingbox.com', phone:'+971 50 100 0001', position:'CEO & Founder',         dept:'Management', joinDate:'2022-01-01'},
+ {id:'u2', nm:'Jaya',           role:'admin',   av:'JA', bg:'var(--pd)', c:'var(--purple)', rl:'Administrator',   pin:'jaya@123',   email:'jaya@bloomingbox.com',   phone:'', position:'Administrator',              dept:'Management', joinDate:'2024-01-01'},
+ {id:'u3', nm:'Tanya BB',       role:'manager', av:'TB', bg:'#fff0f2',   c:'var(--du)',     rl:'Account Manager', pin:'tanya@123',  email:'tanya@bloomingbox.com',  phone:'+971 50 200 0002', position:'Senior Account Manager', dept:'Sales',       joinDate:'2023-03-15'},
+ {id:'u4', nm:'Maria Khan',     role:'manager', av:'MK', bg:'#eff6ff',   c:'var(--dp)',     rl:'Account Manager', pin:'Maria@123',  email:'maria@bloomingbox.com',  phone:'+971 50 300 0003', position:'Account Manager',        dept:'Sales',       joinDate:'2023-09-01'},
 ];
 let CU=null; // current user
 
@@ -1804,7 +1805,54 @@ function toast(msg,type='info'){
 // Sidebar filter
 function filterP(q){document.querySelectorAll('.pi').forEach(el=>{el.style.display=el.querySelector('.pn').textContent.toLowerCase().includes(q.toLowerCase())?'':'none';});}
 
+// ═══════════════════════════════════════════
+// PERSISTENCE — localStorage
+// ═══════════════════════════════════════════
+const STORAGE_KEY = 'bbcrm_data_v2';
+
+function saveToStorage(){
+ try{
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({
+   PD, USERS_LIST, nextId,
+   savedAt: new Date().toISOString()
+  }));
+ } catch(e){ console.warn('Storage save failed:', e); }
+}
+
+function loadFromStorage(){
+ try{
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if(!raw) return false;
+  const saved = JSON.parse(raw);
+  if(saved.PD && Array.isArray(saved.PD)) PD = saved.PD;
+  if(saved.USERS_LIST && Array.isArray(saved.USERS_LIST)) USERS_LIST = saved.USERS_LIST;
+  if(saved.nextId) nextId = saved.nextId;
+  return true;
+ } catch(e){ console.warn('Storage load failed:', e); return false; }
+}
+
+// Auto-save wrapper — patches all mutating functions to save after execution
+const _autoSaveFns = [
+ 'saveProfile','saveBilling','savePOC','saveProject','saveSD','savePartner',
+ 'saveOrder','saveNote','submitAddNote','saveEditNote','deleteNote',
+ 'delPOC','delProj','delOrder','deleteSD','delReceipt','addReceiptImages',
+ 'saveUser','toggleUserDisabled','updateProjStatus','updatePayStatus',
+ 'markPaid','togOS','togWA','saveLog','updatePartnerStatus'
+];
+_autoSaveFns.forEach(fn=>{
+ if(typeof window[fn]==='function'){
+  const orig=window[fn];
+  window[fn]=function(...args){
+   const result=orig.apply(this,args);
+   // Save after a tick to let state settle
+   setTimeout(saveToStorage, 50);
+   return result;
+  };
+ }
+});
+
 // INIT
+loadFromStorage();
 renderLoginScreen();
 </script>
 </body>
